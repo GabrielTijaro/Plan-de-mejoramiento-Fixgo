@@ -62,32 +62,30 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 
 | Field | Value |
 |-------|-------|
-| **Name** | [ContextName] |
-| **Responsibility** | [What this context captures in one sentence] |
-| **Owning team** | [Responsible team or person] |
-| **Microservice(s)** | [service-name, service2-name] |
-| **Database** | [PostgreSQL / MongoDB / Redis / etc.] |
-| **Ubiquitous Language** | [Key business terms in this context] |
+| **Name** | User Management |
+| **Responsibility** | User/mechanic registration, authentication, roles, and vehicle records |
+| **Owning team** | Individual remediation (this apprentice) |
+| **Microservice(s)** | `auth-service` |
+| **Database** | MySQL |
+| **Ubiquitous Language** | Driver, Mechanic, Vehicle, Role, Verification |
 
 **Context-specific terms (Ubiquitous Language):**
 
 | Term | Meaning in THIS context | Different in another context? |
 |------|------------------------|-------------------------------|
-| [User] | [Person with an active account] | [Yes — in Billing it's "Client"] |
-| [Account] | [Set of credentials] | [No] |
-
+| Request | An active service ticket with coordinates | No |
 ---
 
 ### Bounded Context: [Name — e.g.: Order Management]
 
 | Field | Value |
 |-------|-------|
-| **Name** | [ContextName] |
-| **Responsibility** | |
-| **Owning team** | |
-| **Microservice(s)** | |
-| **Database** | |
-| **Ubiquitous Language** | |
+| **Name** | Matchmaking & Dispatch |
+| **Responsibility** | Service request lifecycle, matching to a nearby mechanic, and live location sync |
+| **Owning team** | Individual remediation (this apprentice) |
+| **Microservice(s)** | `service-request` |
+| **Database** | MySQL (request data) + Firebase Realtime Database (live GPS, ephemeral) |
+| **Ubiquitous Language** | ServiceRequest, GPSLocation, MatchResult |
 
 ---
 
@@ -97,40 +95,41 @@ The Context Map shows relationships between bounded contexts. Relationships defi
 how contexts communicate and who holds the "power" in the integration.
 
 ```
-┌─────────────────────┐        ┌──────────────────────┐
-│  [Context A]        │        │  [Context B]         │
-│                     │──────▶│                      │
-│  Domain:            │  D→C  │  Domain:             │
-│  [responsibility]   │       │  [responsibility]    │
-└─────────────────────┘       └──────────────────────┘
-                                        │
-                               D→C      │
-                                        ▼
-                              ┌──────────────────────┐
-                              │  [Context C]         │
-                              │                      │
-                              │  [responsibility]    │
-                              └──────────────────────┘
+┌──────────────────────┐        ┌─────────────────────────────────┐
+│  User Management     │        │  Matchmaking & Dispatch         │
+│  (auth-service)       │──────▶│  (service-request)              │
+│                       │  U→D  │                                 │
+│  Driver/Mechanic/     │        │  ServiceRequested →            │
+│  Vehicle identity     │        │  MechanicMatched               │
+└──────────────────────┘        └───────────────┬─────────────────┘
+                                                 │ U→D
+                                                 ▼
+                                 ┌───────────────────────────────┐
+                                 │  Service Execution             │
+                                 │  (service-execution)           │
+                                 │                                │
+                                 │  Diagnostic & closure          │
+                                 └───────────────────────────────┘
 ```
 
 ### Context relationship types
 
-| Type | Symbol | Description | Example |
+|| Type | Symbol | Description | Used in FixGo? |
 |------|--------|-------------|---------|
-| **Upstream → Downstream** | `U → D` | U provides, D consumes. D depends on U. | Auth → Orders |
-| **Shared Kernel** | `SK` | Two teams share part of the model | Shared User ID |
-| **Customer/Supplier** | `C/S` | Supplier (U) negotiates with Customer (D) | Inventory → Sales |
-| **Conformist** | `CONF` | D adopts U's model without negotiating | Legacy integration |
-| **Anti-Corruption Layer** | `ACL` | D translates U's model to protect itself | Gateway → External API |
-| **Open Host Service** | `OHS` | U publishes a published protocol | Event Bus, REST API |
-| **Published Language** | `PL` | Explicit shared language | OpenAPI spec, events |
+| **Upstream → Downstream** | `U → D` | Upstream provides, Downstream consumes and depends on it | Yes — both relationships below |
+| **Shared Kernel** | `SK` | Two contexts share part of the model | No |
+| **Customer/Supplier** | `C/S` | Supplier negotiates with Customer on the contract | No |
+| **Conformist** | `CONF` | Downstream adopts Upstream's model without negotiating | No |
+| **Anti-Corruption Layer** | `ACL` | Downstream translates Upstream's model to protect itself | No |
+| **Open Host Service** | `OHS` | Upstream publishes a stable, published protocol | No — internal REST/events only, not a public API |
 
 ### Relationships table
 
 | Context A | Relationship | Context B | Communication channel | Contract |
 |-----------|-------------|-----------|----------------------|---------|
-| [Context A] | U → D | [Context B] | REST / Event | OpenAPI / AsyncAPI |
-| [Context B] | ACL | [Context C] | Adapter | Internal interface |
+| User Management | U → D | Matchmaking & Dispatch | REST | Internal API |
+| Matchmaking & Dispatch | U → D | Service Execution | Event | `ServiceRequested` / `MechanicMatched` |
+ 
 
 ---
 
@@ -138,11 +137,11 @@ how contexts communicate and who holds the "power" in the integration.
 
 DDD classifies subdomains by their strategic value:
 
-| Type | Description | Investment | Example |
-|------|-------------|-----------|---------|
-| **Core Domain** | Where the business competitive advantage lies. What differentiates us. | MAXIMUM — build, don't buy | Matching algorithm |
-| **Supporting Subdomain** | Necessary for the core but not differentiating. Can be outsourced. | MEDIUM | Order management |
-| **Generic Subdomain** | Commodity. Off-the-shelf solution exists. | MINIMUM — buy/use OSS | Authentication, emails |
+| Bounded Context | Type | Justification |
+|----------------|------|---------------|
+| Matchmaking & Dispatch | Core | Real-time matching is FixGo's main value proposition |
+| Service Execution | Supporting | Completes the flow but is not the differentiator |
+| User Management | Generic | Standard authentication/profile management, delegated to Firebase |
 
 ### Classification of this project's bounded contexts
 
@@ -184,3 +183,9 @@ DDD classifies subdomains by their strategic value:
 > Microservices in `09-microservices/service-catalog.md` →
 > C4 diagrams in `08-uml/` →
 > Service separation ADRs in `05-architecture/decisions/`
+
+## Correlations
+ 
+- Entities and rules → `02-domain/entities-and-rules.md`
+- Domain events → `02-domain/domain-events.md`
+- Data ownership matrix → `06-data/models.md`  
