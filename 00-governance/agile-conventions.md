@@ -7,8 +7,8 @@
 
 ## Sprint structure
 
-|| Checkpoint | Due | Scope |
-|---|---|---|
+| Checkpoint | Due | Scope |
+|-------------|------------------------|--------------------------------------------------------|
 | Delivery 1 | 14-sep-2026, 18:00 | Sections 00-governance, 01-context, 02-domain |
 | Delivery 2 | 16-sep-2026, 18:00 | Sections 03-product, 04-requirements (based on the HU loaded by the instructor in the GitHub Project) |
 | Delivery 3 | 18-sep-2026, 18:00 | Sections 05-architecture, 06-data, 12-ux-ui |
