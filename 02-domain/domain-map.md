@@ -58,7 +58,7 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 > - Can be deployed independently
 > - The same term in two different contexts can mean different things
 
-### Bounded Context: [Name — e.g.: User Management]
+### Bounded Context: User Management 
 
 | Field | Value |
 |-------|-------|
@@ -73,10 +73,9 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 
 | Term | Meaning in THIS context | Different in another context? |
 |------|------------------------|-------------------------------|
-| Request | An active service ticket with coordinates | No |
----
+| Verification | Admin approval that unlocks a Mechanic to receive requests | No |
 
-### Bounded Context: [Name — e.g.: Order Management]
+### Bounded Context: Matchmaking & Dispatch
 
 | Field | Value |
 |-------|-------|
@@ -87,6 +86,18 @@ has consistent meaning. Each bounded context has its own Ubiquitous Language.
 | **Database** | MySQL (request data) + Firebase Realtime Database (live GPS, ephemeral) |
 | **Ubiquitous Language** | ServiceRequest, GPSLocation, MatchResult |
 
+### Bounded Context: Service Execution
+
+| Field | Value |
+|-------|-------|
+| **Name** | Service Execution |
+| **Responsibility** | On-site diagnostic and closure of a service request |
+| **Owning team** | Individual remediation (this apprentice) |
+| **Microservice(s)** | `service-execution` |
+| **Database** | MySQL |
+| **Ubiquitous Language** | Diagnostic, CompletionRecord |
+
+---
 ---
 
 ## 3. Context Map
@@ -143,13 +154,6 @@ DDD classifies subdomains by their strategic value:
 | Service Execution | Supporting | Completes the flow but is not the differentiator |
 | User Management | Generic | Standard authentication/profile management, delegated to Firebase |
 
-### Classification of this project's bounded contexts
-
-| Bounded Context | Type | Justification |
-|----------------|------|---------------|
-| [Context A] | Core | [why it is the heart of the business] |
-| [Context B] | Supporting | [why it supports without being differentiating] |
-| [Context C] | Generic | [standard solution available] |
 
 ---
 
@@ -157,12 +161,16 @@ DDD classifies subdomains by their strategic value:
 
 ### How were these decisions made?
 
-> Document the Event Storming session or the process you used to arrive at the map.
-> If you changed the map, explain why.
+No formal Event Storming workshop was held — the bounded contexts were derived directly
+from the 7 SRS modules and validated individually against the roles and entities each
+module describes.
 
-- **Event Storming session:** [date], [participants]
-- **Tool used:** [Miro / Lucidchart / physical whiteboard]
-- **Map iterations:** v1 (date), v2 (date)
+### Key decisions and discarded alternatives
+
+| Decision | Discarded alternative | Reason |
+|----------|----------------------|--------|
+| Merge Vehicle management into User Management instead of a separate context | A standalone "Vehicle Management" context | A vehicle has no independent lifecycle from its Driver's account |
+| Single `service-request` microservice for matching + live GPS | Separate `geolocation-service` | The data model has no independent GPS schema — it's ephemeral data inside the same service |
 
 ### Key decisions and discarded alternatives
 
