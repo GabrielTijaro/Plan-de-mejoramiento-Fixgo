@@ -7,9 +7,9 @@
 
 The most costly mistakes in software are not bugs — they are domain misunderstandings.
 When developers do not deeply understand the business:
-- They create incorrect abstractions that have to be rewritten
-- Names in the code do not match the business's names → permanent confusion
-- Microservice boundaries are drawn incorrectly
+- Entities and invariants match real-world constraints (like the strict 3-second SLA and 15-meter GPS precision).
+- Microservice boundaries are drawn correctly based on clear Bounded Contexts (`auth-service`, `service-request`, `service-execution`).
+- Ubiquitous language is shared equally among developers, product owners, and business stakeholders.
 
 This section captures domain knowledge **before** designing the architecture.
 
