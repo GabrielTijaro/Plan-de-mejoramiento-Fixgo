@@ -1,8 +1,7 @@
-# Security Policy
+# Security Policy — FixGo
 
-> Security is not a feature — it is a system property built from day one. This document
-> defines the mandatory practices.
-> Any deviation must be explicitly approved by the Tech Lead.
+> Adapted from the generic framework template to FixGo's actual roles and stack
+> (Firebase Auth + JWT, MySQL, Firebase Realtime Database).
 
 ---
 
@@ -18,20 +17,12 @@
 
 ## Authentication
 
-### JWT (JSON Web Tokens)
+- Firebase Authentication issues the identity token; the backend (`auth-service`, Java /
+  Spring Boot) validates it and issues its own JWT for API access.
+- Access token expiration: 1 hour. Refresh token: 7 days, rotated on each use.
+- Passwords are never handled directly by FixGo services — Firebase Auth owns credential
+  storage. `auth-service` only stores the resulting `user_id`, role, and profile data.
 
-| Property | Required value |
-|----------|---------------|
-| Signing algorithm | RS256 (asymmetric) or HS256 with 256+ bit secret |
-| Access token expiration | 1 hour (`exp`) |
-| Refresh token expiration | 7 days |
-| Required claims | `sub` (userId), `iat`, `exp`, `jti` (unique token ID) |
-| Client storage | `httpOnly cookie` (web) or Keychain/Keystore (mobile) |
-
-**Prohibited in the payload:**
-- Passwords
-- Card data
-- Full PII (only the user ID)
 
 ### Refresh Token
 
@@ -44,34 +35,36 @@
 
 ## Authorization
 
-### RBAC (Role-Based Access Control)
+## Authorization — RBAC
 
 | Role | Description | Permissions |
 |------|-------------|------------|
-| `SUPER_ADMIN` | System technical administrator | All |
-| `ADMIN` | Business administrator | [define] |
-| `OPERATOR` | Operator with write permissions | [define] |
-| `VIEWER` | Read-only | [define] |
-| `[CUSTOM_ROLE]` | [description] | [define] |
+| `DRIVER` | Registered user requesting roadside assistance | `vehicles:create`, `vehicles:read` (own), `requests:create`, `requests:read` (own) |
+| `MECHANIC` | Verified workshop/technician receiving dispatch requests | `requests:read` (assigned), `requests:update` (status/diagnostic), `profile:update` (own) |
+| `ADMIN` | Platform operator | `mechanics:verify`, `requests:read` (all), `audit-logs:read` |
 
 **Permission model:**
 
-```
-Permission: [resource]:[action]
+```text
+Permission: resource: action
 
-Examples:
-  orders:create
-  orders:read
-  orders:update
-  orders:delete
-  users:read
-  reports:export
-```
+Examples for FixGo:
+  vehicles:create
+  vehicles:read
+  vehicles:update
+  vehicles:delete
+  requests:create
+  requests:read
+  requests:update
+  mechanics:verify
+  audit-logs:read
 
 **Validation:**
 - The API Gateway validates the JWT (signature and expiration)
+
 - Each service validates the role permissions for the specific operation
-- Roles are included in the JWT as claim `roles: ["OPERATOR", "VIEWER"]`
+
+- Roles are included in the JWT as claim roles: ["DRIVER", "MECHANIC", "ADMIN"]
 
 ---
 
@@ -206,13 +199,14 @@ const SECURITY_EVENTS = [
 
 ## Vulnerability process
 
-### What to do if you find a vulnerability
+If a vulnerability is found in this documentation or in a future implementation:
 
-1. **Do not commit it to the public repo** or discuss it in open channels
-2. Immediately notify the Tech Lead via a private channel
-3. Create a private issue or a restricted repository issue
-4. Severity is assigned (CVSS score or internal classification)
-5. Remediated in the current sprint if critical, in the next sprint if high
+1. Do not commit sensitive details (keys, tokens, real user data) to this public
+   academic repository.
+2. Report it privately to the instructor and, if the team repository is affected, to the
+   FixGo team lead (Johan Andrés Liñan Esquivel).
+3. Document the fix as an ADR if it changes an architectural decision (e.g. a change in
+   how JWTs are validated).
 
 ### Remediation SLAs
 
@@ -227,7 +221,5 @@ const SECURITY_EVENTS = [
 
 ## Correlations
 
-- Security non-functional requirements → `04-requirements/non-functional.md`
-- ADR on authentication → `05-architecture/decisions/`
-- Security event observability → `13-operations/observability.md`
-- RBAC implemented in → `09-microservices/services/XX-auth-service/`
+- Non-functional security requirements → `04-requirements/non-functional.md`
+- Data ownership and encryption at rest → `06-data/models.md`
