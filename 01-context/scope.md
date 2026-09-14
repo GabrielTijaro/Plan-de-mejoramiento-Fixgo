@@ -1,29 +1,28 @@
 # System Scope
 
-> **Why this document exists:** Scope prevents scope creep and aligns expectations.
-> It is equally important to define what the system does NOT do as what it does.
-> Review this document at the start of each planning cycle.
-
----
-
 ## In Scope
 
 What the system **DOES build and maintain**:
 
 ### MVP Features
 
-| # | Feature | Description | Responsible service |
-|---|---------|-------------|---------------------|
-| 1 | [Feature A] | [Brief description] | [service-name] |
-| 2 | [Feature B] | [Brief description] | [service-name] |
-| 3 | [Feature C] | [Brief description] | [service-name] |
+| # | Feature | Description | SRS Module |
+|---|---|---|---|
+| 1 | User registration & authentication | Registration, login, roles (Driver/Mechanic/Admin), password recovery | Module 1 |
+| 2 | Vehicle management | Register, update, deactivate a vehicle; associate it to a service request | Module 2 |
+| 3 | Service request | Create, update, cancel a roadside-assistance request; estimated cost | Module 3 |
+| 4 | Real-time tracking | Live status and mechanic location tracking, service history | Module 4 |
+| 5 | Platform sync | Multi-device access, offline mode | Module 5 |
+| 6 | Personalization | Language (ES/EN) and light/dark theme | Module 6 |
+| 7 | Audit | Admin can query audit logs by date, user, action, module | Module 7 |
 
 ### Included integrations
 
 | External system | Integration type | Purpose |
-|----------------|-----------------|---------|
-| [System A] | REST API / Webhook / SDK | [purpose] |
-| [System B] | SFTP / Database | [purpose] |
+|-----------------|------------------|---------|
+| Firebase Authentication | SDK | User authentication, session management, and JWT token generation |
+| Google Maps API | REST API / SDK | Georeferencing for real-time tracking of mechanics and driver locations |
+| MySQL Cloud Hosting | TCP/IP / JDBC | Cloud database for persistent relational data storage (users, vehicles, requests) |
 
 ### Environments being built
 
@@ -38,20 +37,22 @@ What the system **DOES build and maintain**:
 
 ## Out of Scope
 
-What the system **does NOT build** in this version and why:
+| # | What is out of scope | Reason |
+|---|---|---|
+| 1 | Physical vehicle repair | FixGo is a dispatch/matching platform, not a repair provider |
+| 2 | Spare parts sales | Outside the core dispatch domain |
+| 3 | Insurance integration | No standard public API available; legal complexity |
+| 4 | In-app payments | Out of MVP budget; settlement happens directly between driver and mechanic |
+| 5 | Voice assistant support | Not required to meet the core dispatch flow |
+| 6 | Predictive AI analytics | Not required for MVP |
 
-| # | What is out of scope | Reason | Future version? |
-|---|---------------------|--------|----------------|
-| 1 | [Feature X] | [Out of budget / Not MVP / Uses external system] | Yes — H2 2024 |
-| 2 | [Integration with Y] | [Provider has no public API yet] | Pending provider |
-| 3 | [Module Z] | [Another team builds it] | N/A |
 
 ### What another system / team handles (and why not us)
 
 | Feature | Who builds it | Why not us |
-|---------|--------------|-----------|
-| [SSO Authentication] | Central IAM team | Reuse existing implementation |
-| [Financial reports] | BI system / Analytics team | Outside the core domain |
+|---------|---------------|------------|
+| Credential storage & Password hashing | Firebase | Reusing secure, proven infrastructure is safer and faster than building custom credential vaults |
+| Payment processing | N/A (Direct cash/transfer) | Out of MVP scope; transaction happens physically between driver and mechanic |
 
 ---
 
@@ -60,32 +61,30 @@ What the system **does NOT build** in this version and why:
 > These assumptions are taken to be true. If they change, the scope must be renegotiated.
 
 | # | Assumption | Consequence if false |
-|---|-----------|---------------------|
-| 1 | External system [X] has an available REST API | We would have to build the integration differently |
-| 2 | Users use [language / device / etc.] | The UX design would change |
-| 3 | Initial data volume is < [N] records | The database strategy might change |
+|---|------------|----------------------|
+| 1 | Firebase and external APIs maintain their free-tier limits during development | We would need to migrate to open-source alternatives or secure a project budget |
+| 2 | Target users (drivers and mechanics) have mobile devices running Android 8.0+ | The Android application would not be accessible to the target demographic |
+| 3 | Mechanics have reliable mobile data connections during service dispatches | Offline mode would need to be expanded, affecting real-time tracking accuracy |
 
 ---
 
 ## Constraints
 
 | Type | Description |
-|------|-------------|
-| **Time** | [MVP must be ready in X weeks / by date Y] |
-| **Budget** | [N development hours / X USD of infrastructure] |
-| **Technology** | [Must use the corporate stack: Java + PostgreSQL] |
-| **Regulatory** | [Must comply with X regulation / certification] |
-| **Team** | [N developers available] |
-
+|---|---|
+| Time | MVP scope must be documented within the current SENA term / remediation checkpoints |
+| Budget | $0 infrastructure budget — Firebase and Google Cloud free tiers only |
+| Technology | Java + Spring Boot backend, Firebase, Android 8.0+ |
+| Team | This repository is written individually as part of the remediation plan |
 ---
 
 ## External dependencies
 
 | Dependency | Team / Provider | Required date | Status |
-|-----------|----------------|--------------|--------|
-| API of [System X] | [Team name] | [date] | 🟢 Available |
-| Credentials for [Provider Y] | [Contact] | [date] | 🟡 In progress |
-| [Infrastructure Z] | DevOps | [date] | 🔴 Pending |
+|------------|-----------------|---------------|--------|
+| Firebase Project Credentials & SDK | Google Cloud | 14-sep-2026 | 🟢 Available |
+| Cloud MySQL Database Provisioning | Hosting Provider | 16-sep-2026 | 🟡 In progress |
+| Geolocation / Maps API Keys | Google Maps | 18-sep-2026 | 🔴 Pending | 
 
 ---
 
@@ -103,7 +102,5 @@ The scope can change, but the change has a process:
 
 ## Correlations
 
-- Vision and roadmap → `03-product/vision.md`
-- Term glossary → `01-context/glossary.md`
-- System overview → `01-context/overview.md`
-- Scope-related risks → `15-project-control/risks.md`
+- Vision → `03-product/vision.md`
+- Glossary → `01-context/glossary.md`

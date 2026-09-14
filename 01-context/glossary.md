@@ -1,9 +1,4 @@
 # Project Glossary
-
-> **Instructions:** Define here all technical and business terms used in the project.
-> This is the official dictionary — if there is ambiguity, this document wins.
-> Add terms throughout the project, not only at the start.
-
 ---
 
 ## How to use this glossary
@@ -16,10 +11,18 @@
 
 ## Domain terms
 
-| Term | Definition | Notes / Synonyms |
-|------|-----------|-----------------|
-| [Term A] | [Precise definition in the context of this system] | [Synonyms or alternative uses to AVOID] |
-| [Term B] | [Definition] | |
+| Term | Definition |
+|---|---|
+| **Driver** | A registered user who owns at least one vehicle and can create service requests |
+| **Mechanic** | A verified technician or workshop that receives and fulfills service requests |
+| **Vehicle** | A car or motorcycle registered by a Driver (plate, brand, model, type — SRS RF2.1) |
+| **Service Request** | The ticket created by a Driver describing a breakdown, its location, and status |
+| **Matchmaking** | The process of assigning an available nearby Mechanic to a Service Request |
+| **Diagnostic** | The record a Mechanic submits when closing a Service Request, describing the finding and outcome |
+| **Verification** | The admin process that confirms a Mechanic's credentials before they can accept requests |
+| **Dispatch Range** | The maximum radius within which a Mechanic is eligible to receive a request |
+| **Direct Settlement** | Payment for the service completed directly between Driver and Mechanic, outside the app (in-app payments are out of scope) |
+| **Audit Log** | A recorded system action (who, what, when, module, result) queryable by an Administrator per SRS Module 7 |
 
 ---
 
@@ -35,23 +38,17 @@
 | Saga | Sequence of local transactions across different services with compensating transactions on failure |
 | Dead Letter Queue | Queue where messages that could not be processed after several retries are sent |
 | Idempotence | Property of an operation to produce the same result if executed multiple times |
-
+| Bounded Context | A boundary within which a domain model has one consistent meaning |
+| Domain Event | A fact that already happened in the business, named in past tense |
+| JWT | JSON Web Token — used for authenticated API calls after Firebase login |
 ---
 
 ## Acronyms
 
 | Acronym | Meaning |
-|---------|---------|
-| IAM | Identity and Access Management |
-| JWT | JSON Web Token |
-| API | Application Programming Interface |
-| CRUD | Create, Read, Update, Delete |
-| DTO | Data Transfer Object |
-| FR | Functional Requirement |
+|---|---|
+| SRS | Software Requirements Specification |
+| RF | Functional Requirement |
 | NFR | Non-Functional Requirement |
-| SLO | Service Level Objective |
-| SLA | Service Level Agreement |
 | ADR | Architecture Decision Record |
-| PR | Pull Request |
-| DoD | Definition of Done |
-| CI/CD | Continuous Integration / Continuous Delivery |
+| FCM | Firebase Cloud Messaging |
