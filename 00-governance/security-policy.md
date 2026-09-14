@@ -136,17 +136,15 @@ element.textContent = userProvidedContent;
 
 ```typescript
 // Explicit validation schema in the controller
-const CreateOrderSchema = z.object({
-  clientId: z.string().uuid(),
-  items: z.array(z.object({
-    productId: z.string().uuid(),
-    quantity: z.number().int().positive().max(1000),
-    price: z.object({
-      amount: z.number().positive(),
-      currency: z.enum(['COP', 'USD']),
-    }),
-  })).min(1).max(50),
-});
+const CreateServiceRequestSchema = z.object({
+  driverId: z.string().uuid(),
+  vehicleId: z.string().uuid(),
+  issueDescription: z.string().min(10).max(500),
+  location: z.object({
+    latitude: z.number().min(-90).max(90),
+    longitude: z.number().min(-180).max(180),
+  }),
+}); 
 ```
 
 ---
