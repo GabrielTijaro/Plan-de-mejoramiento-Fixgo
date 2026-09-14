@@ -24,20 +24,20 @@ current status (under construction / in production / legacy).
 
 **Suggested format:**
 ```markdown
-## What is [System Name]?
-[2-3 sentences: what it is and what it's for]
+## What is FixGo?
+FixGo is a real-time mobile platform designed to instantly connect stranded drivers with nearby mechanics and roadside assistance workshops. It streamlines emergency vehicular repairs by offering precise geolocation matching and secure digital request handling.
 
 ## Problem it solves
-[The user's pain before this system]
+Drivers experiencing unexpected mechanical breakdowns face severe delays, lack reliable ways to find nearby open workshops, and struggle to get trusted roadside assistance quickly. Mechanics also miss out on local clients due to poor digital visibility and inefficient manual dispatching.
 
 ## Main users
-- [Role 1]: [what they do in the system]
-- [Role 2]: [what they do in the system]
+- Drivers: Request immediate roadside assistance, track mechanic location in real-time, and manage service profiles.
+- Mechanics: Receive emergency service requests, accept jobs based on proximity, and manage on-site diagnostic offerings.
 
 ## Technology stack
-- Backend: [language/framework]
-- Database: [engine]
-- Infrastructure: [Docker/K8s/Cloud]
+- Backend: Java / Maven
+- Database: Firebase Realtime Database / SQL
+- Infrastructure: Cloud-based deployment with AES-256 security standards
 ```
 
 ### `scope.md` ⭐
