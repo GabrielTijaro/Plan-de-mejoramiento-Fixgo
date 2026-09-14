@@ -11,7 +11,7 @@ Before designing anything, the team needs to agree on:
 - What is in scope and what is out of scope?
 - What does each term we use mean?
 
-Without this, each team member works with different assumptions and the project fragments.
+Without this, each team member works with different assumptions and the project fragments. 
 
 ---
 
@@ -48,14 +48,23 @@ This prevents scope creep (the system that grows without control).
 **Format:**
 ```markdown
 ## In scope (MVP)
-- [Feature 1]
-- [Feature 2]
+- Driver and mechanic profile registration with Firebase authentication.
+- Real-time geolocation tracking with a 15-meter accuracy target.
+- Automated service request matchmaking with a 3-second SLA response.
+- Client data protection using AES-256 encryption standards.
 
 ## Out of scope (MVP)
-- [What we deliberately do NOT do]
+- In-app payment processing and financial transactions.
+- Direct sale of automotive parts or physical merchandise.
+- Direct employment or contracting of mechanics by FixGo.
+- Provisioning of physical tow trucks by the platform.
+
 
 ## Candidates for future versions
-- [What might come later]
+- Integrated payment gateways credit cards, digital wallets.
+- In-app chat and VoIP calling between drivers and mechanics.
+- A user rating and review system for mechanics and workshops.
+- Scheduled maintenance and preventive diagnostic bookings.
 ```
 
 ### `glossary.md` ⭐
@@ -67,7 +76,11 @@ If two people define "client" differently, the system will have bugs.
 ```markdown
 | Term | Definition | Synonyms | Notes |
 |------|-----------|----------|-------|
-| [Term] | [Precise definition in the context of this system] | [if any] | [if applicable] |
+| Driver | Individual experiencing a breakdown who requests immediate assistance. | Client, User | Initiates the matchmaking process. |
+| Mechanic | Automotive professional offering on-site diagnostics and repair services. | Workshop, Provider | Must pass system verification. |
+| Matchmaking | The algorithmic process of pairing a driver's request with the nearest mechanic. | Pairing, Dispatch | Must adhere to the 3-second SLA. |
+| On-site Repair | Mechanical assistance provided directly at the vehicle's breakdown location. | Roadside Assistance | The core service facilitated by FixGo. |
+| SLA | Service Level Agreement defining the performance benchmark of the system. | Target Response | Set at a maximum of 3 seconds for system queries. |
 ```
 
 ### `_template-project-profile.md`
@@ -82,10 +95,10 @@ Formal scope declaration template for presentations or deliverables.
 ## Correlations with other sections
 
 | If you change this... | Also review... |
-|-----------------------|----------------|
-| The problem described in `overview.md` | Product vision in `03-product/vision.md` |
-| The scope in `scope.md` | Requirements in `04-requirements/`, PRD in `03-product/` |
-| A term in `glossary.md` | Every document where that term appears |
+|---|---|
+| The problem described in `overview.md` | `03-product/vision.md` |
+| The scope in `scope.md` | `04-requirements/`, `03-product/` |
+| A term in `glossary.md` | Every document that uses that term — start with `02-domain/domain-map.md` |
 
 ---
 
