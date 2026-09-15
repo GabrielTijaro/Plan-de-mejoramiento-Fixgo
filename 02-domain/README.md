@@ -42,18 +42,18 @@ Map of all bounded contexts and how they relate.
 **Format:**
 ```markdown
 ## Bounded Contexts
-
-### [Context Name]
-**Responsibility:** [what this context manages]
-**Main entities:** [list]
-**Owning team:** [team]
+### Matchmaking & Dispatch
+**Responsibility:** Service request lifecycle, matching to a nearby mechanic, and live location sync.
+**Main entities:** ServiceRequest, MatchResult, GPSLocation.
+**Owning team:** FixGo Backend Team
 
 ## Relationship map
-[ASCII diagram or description of how the contexts relate]
+User Management (auth-service) ──▶ Matchmaking & Dispatch (service-request) ──▶ Service Execution (service-execution)
 
 | Context A | Relationship | Context B | Description |
 |-----------|-------------|-----------|-------------|
-| [A] | downstream-of | [B] | [A] consumes events from [B] |
+| service-request | downstream-of | auth-service | service-request consumes identity and vehicle data to validate incoming requests. |
+| service-execution | downstream-of | service-request | service-execution is triggered once a ServiceRequest is successfully assigned to a mechanic. |
 ```
 
 ### `entities-and-rules.md` ⭐
@@ -63,19 +63,21 @@ behaviors.
 
 **Format:**
 ```markdown
-## Entity: [EntityName]
-**Belongs to:** [Bounded Context]
-**Identifier:** [field that makes it unique]
+## Entity: ServiceRequest
+**Belongs to:** Matchmaking & Dispatch (`service-request`)
+**Identifier:** requestId (UUID)
 
 ### Attributes
 | Attribute | Type | Description | Required | Rules |
 |-----------|------|-------------|---------|-------|
+| driverId | UUID | Requester ID | Yes | Must be an active Driver |
+| incidentLocation | GPSLocation | Breakdown coords | Yes | Required for dispatch algorithm |
 
 ### Business rules (invariants)
-- [ ] [A rule that must always hold]
+- [x] INV-002 Latency SLA: Real-time location updates and matchmaking alerts must process in under 3 seconds.
 
 ### Behaviors (domain methods)
-- `[name()]`: [what it does]
+- `acceptRequest(mechanicId)`: Validates mechanic is available, locks the request, transitions state to ACCEPTED.
 ```
 
 ### `domain-events.md` ⭐
@@ -86,7 +88,7 @@ List of all events that occur in the domain.
 ```markdown
 | Event | Triggered by | Data | Consumers | Bounded Context |
 |-------|-------------|------|-----------|----------------|
-| [NameInPastTense] | [action that causes it] | [event fields] | [what listens to this] | [context] |
+| MechanicMatched | Algorithm assigns a mechanic within the SLA | requestId, mechanicId, eta | Service Execution, Driver UI | Matchmaking & Dispatch |
 ```
 
 ---
