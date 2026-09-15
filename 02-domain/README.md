@@ -17,18 +17,15 @@ This section captures domain knowledge **before** designing the architecture.
 
 ## Key concepts you must know
 
-**Entity:** Domain object with a unique identity (e.g.: a `Student` identified by their code).
+## Key concepts you must know
 
-**Value Object:** Object with no identity of its own, defined by its attributes (e.g.: `Address`, `Price`).
+## Key concepts you must know
 
-**Aggregate:** Group of entities treated as a unit. Only the aggregate root
-can be referenced from outside.
-
-**Domain Event:** Something that occurred in the business that other parts of the system must know
-(e.g.: `StudentEnrolled`, `PaymentApproved`). They are facts, stated in past tense.
-
-**Bounded Context:** Area of the system where a particular model applies.
-Each microservice generally corresponds to a bounded context.
+* **Entity:** Domain object with a unique identity (e.g.: a `DriverProfile` or `MechanicProfile` identified by their ID).
+* **Value Object:** Object with no identity of its own, defined by its attributes (e.g.: `GPSLocation`, `Money`).
+* **Aggregate:** Group of entities treated as a unit. Only the aggregate root can be referenced from outside (e.g.: `ServiceRequest`).
+* **Domain Event:** Something that occurred in the business that other parts of the system must know (e.g.: `ServiceRequested`, `MechanicMatched`). They are facts, stated in past tense.
+* **Bounded Context:** Area of the system where a particular model applies. Each microservice generally corresponds to a bounded context (e.g.: `service-request`).
 
 ---
 
