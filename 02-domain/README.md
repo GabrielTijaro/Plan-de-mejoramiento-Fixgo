@@ -4,9 +4,8 @@
 > the problem the system solves before writing code. This section comes from Domain-Driven Design (DDD).
 
 ## Why this section exists
+The most costly mistakes in software are domain misunderstandings, not coding bugs. For FixGo, when developers deeply understand the business, the architecture succeeds. This ensures that:
 
-The most costly mistakes in software are not bugs — they are domain misunderstandings.
-When developers do not deeply understand the business:
 - Entities and invariants match real-world constraints (like the strict 3-second SLA and 15-meter GPS precision).
 - Microservice boundaries are drawn correctly based on clear Bounded Contexts (`auth-service`, `service-request`, `service-execution`).
 - Ubiquitous language is shared equally among developers, product owners, and business stakeholders.
@@ -14,10 +13,6 @@ When developers do not deeply understand the business:
 This section captures domain knowledge **before** designing the architecture.
 
 ---
-
-## Key concepts you must know
-
-## Key concepts you must know
 
 ## Key concepts you must know
 
