@@ -41,8 +41,7 @@ It lasts 2–4 hours with the whole team (dev + PO + business expert).
 > Write it without technical terms — it must be readable by a business expert.
 
 ```
-[Describe the business domain here. E.g.: "The system manages the complete cycle of
-[X] reservations, from the customer's request through to confirmation and billing."]
+FixGo is a dispatch and matchmaking platform that connects drivers experiencing vehicle breakdowns with nearby available mechanics. The system manages the complete cycle of roadside assistance, from the user's initial SOS request through real-time GPS tracking, algorithmic matchmaking, and on-site diagnostic closure.
 ```
 
 ---
