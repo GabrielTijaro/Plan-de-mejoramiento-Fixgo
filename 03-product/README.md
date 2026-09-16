@@ -52,12 +52,20 @@ Delivery plan over time. In this repository, the high-level roadmap lives inside
 
 **Format:**
 ```markdown
-## Phase 1 — MVP (Sprint 1-3)
-- [Critical feature 1]
-- [Critical feature 2]
-
-## Phase 2 — Iteration (Sprint 4-6)
-- [Improvements based on feedback]
+## Phase 1 — MVP (Development Sprint 1-3)
+- Driver and Mechanic registration with Firebase Auth
+- Vehicle registration and GPS coordinate validation
+- Core matchmaking: assign nearest available verified mechanic
+ 
+## Phase 2 — Iteration (Development Sprint 4-6)
+- Real-time diagnostic status updates during the service
+- Session and audit logs (SRS Module 7)
+- Performance tuning to hold the 3-second matching SLA (NFR-01)
+ 
+## Phase 3 — Scale (Post-course)
+- Workshop analytics for mechanics
+- Multi-city rollout
+- Payment gateway integration (out of scope for v1.0)
 ```
 
 ### `product-backlog.md` ⭐
@@ -86,16 +94,24 @@ Template for initial backlog user stories.
 > This repository's actual HU format lives in `04-requirements/user-stories.md`
 > (Gherkin `Given/When/Then` acceptance criteria, IDs `HU-001` to `HU-013`) — that is the
 > format to follow, not a separate one defined here.
+ 
+### HU-0NN — Descriptive name {#HU-0NN}
+ 
+**Epic:** EP-00X
+ 
+> **As** a driver
+> **I want** to create an assistance request with my vehicle and location
+> **so that** a nearby available mechanic is assigned
+ 
+**Acceptance Criteria:**
+ 
+Scenario 1: Successful request
+  Given I have an active vehicle and a valid GPS location
+  When  I create a service request
+  Then  the request starts with status PENDING
+ 
+**Estimation:** 5 SP   **Priority:** Must Have
 
-
-### Acceptance criteria
-- [ ] AC1: Given [context], when [action], then [expected result]
-- [ ] AC2: ...
-
-### Technical notes
-[Constraints or implementation considerations]
-
-**Estimation:** [SP]  **Priority:** [High/Medium/Low]
 ```
 
 ---
@@ -104,30 +120,30 @@ Template for initial backlog user stories.
 
 | This section feeds... | Why |
 |-----------------------|-----|
-| `04-requirements/user-stories.md` | Epics in the vision/roadmap become the Epics table there, and get formalized as HUs |
-| `02-domain/` | Problem framing reveals domain entities (Driver, Mechanic, ServiceRequest) |
+| `04-requirements/user-stories.md` | Epics in the vision and roadmap become the Epics table there, then get formalized as HUs |
+| `02-domain/` | Problem framing reveals the domain entities: Driver, Mechanic, Vehicle, ServiceRequest |
+| `05-architecture/` | The 3-second SLA in the vision drives the architectural style decision (ADR-002) |
 ---
 
 ## Questions this section must answer
-
+ 
 **What problem exactly are we solving?**
 Stranded drivers with an unexpected vehicle breakdown have no organized, verified,
-trackable way to reach a nearby mechanic — they rely on random phone calls to
-directory listings, with ~45 minutes average wait and no visibility into who is coming
-or when (`problem-framing.md`, section 1).
-
+trackable way to reach a nearby mechanic — they rely on random phone calls to directory
+listings, with ~45 minutes average wait and no visibility into who is coming or when
+(`problem-framing.md`, section 1).
+ 
 **What does product success look like?**
 Mechanic assignment completed within the 3-second SLA (NFR-01) for over 95% of requests,
-with live GPS tracking accurate to 15 meters (NFR-02) — this is FixGo's North Star Metric
-(`problem-framing.md`, section 6).
-
+with live GPS tracking accurate to 15 meters (NFR-02) — the North Star Metric in
+`problem-framing.md`, section 6.
+ 
 **What do we build first and why?**
-User and vehicle registration, then matching and live tracking — in that order, because
-a service request cannot exist without an authenticated driver and a registered vehicle
-(`02-domain/entities-and-rules.md`, INV-005). This is Horizon 1 in `vision.md`'s roadmap.
-
+User and vehicle registration, then matching and live tracking — in that order, because a
+service request cannot exist without an authenticated driver and an active registered
+vehicle (`02-domain/entities-and-rules.md`, INV-005). This is Phase 1 of the roadmap.
+ 
 **What do we NOT build in this cycle?**
 Physical repair, spare parts sales, insurance integration, in-app payments, voice
 assistants, and predictive AI analytics — all explicitly out of scope for v1.0
 (`01-context/scope.md`).
-
