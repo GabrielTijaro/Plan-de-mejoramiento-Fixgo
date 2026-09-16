@@ -161,7 +161,8 @@ Transversal concerns that apply to ALL services:
 
 | ID | Description | Impact | Priority | Target sprint |
 |----|-------------|--------|---------|--------------|
-| AT-001 | [description] | [high/medium/low] | [P1/P2/P3] | [Sprint X] |
+| AT-001 | No automated tests exist yet for any of the 13 user stories (see `04-requirements/traceability-matrix.md`) | High | P1 | Once code repos exist, before Entrega 3 |
+| AT-002 | `service-request`'s dependency on Firebase Realtime Database for GPS is not yet validated against the 15-meter accuracy NFR under real network conditions | Medium | P2 | Post-remediation |
 
 > See also: `15-project-control/technical-backlog.md`
 
@@ -171,7 +172,7 @@ Transversal concerns that apply to ALL services:
 
 | Version | Architectural change | Motivation | Estimated date |
 |---------|---------------------|------------|----------------|
-| v2.0 | [e.g.: Migrate to gRPC for internal communication] | [Latency] | [Q4 2024] |
+| v1.1 | Add an in-app payment service (out of scope for v1.0, see `01-context/scope.md`) | Direct settlement between driver and mechanic has no dispute record today | Post-course, not scheduled |
 
 ---
 
