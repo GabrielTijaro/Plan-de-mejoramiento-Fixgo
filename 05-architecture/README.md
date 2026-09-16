@@ -23,17 +23,45 @@ each one's responsibility, how they communicate (sync/async), technologies per l
 **Recommended format:**
 ```markdown
 ## Architecture diagram
-[ASCII diagram, Mermaid, or reference to image in assets/]
-
-## Microservices
-| Service | Responsibility | Technology | DB |
-|---------|--------------|------------|-----|
-| [name] | [what it does] | [stack] | [engine] |
-
-## Communication patterns
-- Sync: [what uses REST between which services]
-- Async: [what uses events/messages between which services]
-- Gateway: [how external requests arrive]
+```text
+                  ┌──────────────────────┐
+                  │   Android App        │
+                  │ (Driver / Mechanic)  │
+                  └──────────┬───────────┘
+                             │
+                  ┌──────────▼───────────┐
+                  │     API Gateway      │
+                  │        :8080         │
+                  └──────────┬───────────┘
+        ┌────────────────────┼────────────────────┐
+        │                    │                    │
+┌───────▼──────┐   ┌─────────▼────────┐  ┌────────▼──────────┐
+│ auth-service │   │ service-request  │  │ service-execution │
+│    :3001     │   │      :3002       │  │      :3003        │
+└───────┬──────┘   └─────────┬────────┘  └────────┬──────────┘
+        │                    │                    │
+   ┌────▼────┐      ┌────────▼────────┐      ┌────▼────┐
+   │  MySQL  │      │ MySQL + Firebase│      │  MySQL  │
+   └─────────┘      │  Realtime DB    │      └─────────┘
+                    └─────────────────┘
+```
+ 
+**Service catalog (resolved — see `overview.md`):**
+ 
+| Service | What it does | Stack | Engine |
+|---|---|---|---|
+| `api-gateway` | Routing, JWT validation, rate limiting | Spring Cloud Gateway | — |
+| `auth-service` | Registration, login, roles, Driver/Mechanic/Vehicle records | Java 17 + Spring Boot | MySQL |
+| `service-request` | Request lifecycle, mechanic matching, live GPS tracking | Java 17 + Spring Boot | MySQL + Firebase RTDB |
+| `service-execution` | Diagnostic registration and request closure | Java 17 + Spring Boot | MySQL |
+ 
+**Communication pattern:**
+- **Sync:** REST between `api-gateway` and each service; REST from `service-request` to
+  `auth-service` to validate a Driver and their active Vehicle before creating a request.
+- **Async:** none between services — there is no message broker (ADR-004). The only
+  asynchronous channel is FCM push from `service-request` to the driver's device.
+- **Gateway:** all external requests enter through `api-gateway`, which validates the JWT
+  issued by `auth-service` before routing.
 ```
 
 ### `deployment.md` ⭐
@@ -56,41 +84,32 @@ Denial of Service, Elevation of Privilege. For each threat: implemented mitigati
 
 ### `decisions/` ⭐⭐ — Architecture Decision Records (ADRs)
 
-#### What is an ADR?
-A record of ONE important architectural decision: what was decided, why, what alternatives
-were evaluated, and what the consequences are. They are **short documents** (1-2 pages).
-
-**When to create an ADR:**
-- When choosing a message broker (RabbitMQ vs Kafka vs Redis Streams)
-- When deciding the database strategy (one per service vs shared)
-- When choosing a communication pattern (REST vs gRPC vs events)
-- When choosing an authentication library
-- Any decision that, if changed, requires significant refactoring
-
-**When NOT to create an ADR:**
-- Day-to-day operational decisions
-- Things that can be changed easily without systemic impact
-
-**Use `decisions/_template-adr.md`**
-
-**Typical ADR examples:**
+One ADR per significant technical decision.
+ 
+**ADRs in this repository:**
 ```
-ADR-001-documentation-language.md  → Why English for all documentation
-ADR-002-auth-strategy.md           → Why JWT and not sessions
-ADR-003-database-per-service.md    → Why separate DB per service
-ADR-004-api-gateway.md             → Why Kong and not custom NGINX
+ADR-001-idioma-documentacion.md   → Why all documentation is written in English
+ADR-002-architectural-style.md    → Why three microservices instead of a modular monolith
+ADR-003-data-strategy.md          → Why MySQL per service + Firebase RTDB only for live GPS
+ADR-004-no-message-broker.md      → Why FCM instead of Kafka or RabbitMQ
 ```
+ 
+An ADR is **immutable** once accepted. If a decision changes, write a new ADR that
+supersedes the old one — never edit the original.
 
 ---
 
 ## Correlations with other sections
 
-| This section is fed by... | And feeds... |
-|--------------------------|-------------|
-| `02-domain/domain-map.md` → bounded contexts | `09-microservices/` → one service per context |
-| `04-requirements/non-functional.md` → NFRs | Decisions about technology and scale |
-| ADRs chosen here | `09-microservices/` implements the decided patterns |
-| `deployment.md` | `10-devops/environments.md` |
+| This section depends on... | Why |
+|---|---|
+| `02-domain/domain-map.md` | Bounded contexts define the service boundaries — service names must match exactly |
+| `04-requirements/non-functional.md` | NFR-01 and NFR-03 are what justify the architectural style in ADR-002 |
+ 
+| This section feeds... | Why |
+|---|---|
+| `06-data/models.md` | ADR-003 fixes the database engine each service uses |
+| `09-microservices/service-catalog.md` | Service names, ports, and engines come from here |
 
 ---
 
@@ -105,9 +124,28 @@ ADR-004-api-gateway.md             → Why Kong and not custom NGINX
 ---
 
 ## Questions this section must answer
-
-- How is the system organized into large blocks?
-- Why was each key technology chosen?
-- What alternatives were evaluated and why were they discarded?
-- How is the system deployed?
-- What patterns does the team apply and how?
+ 
+**How is the system organized into large blocks?**
+Three microservices behind an API Gateway — `auth-service`, `service-request`,
+`service-execution` — each owning its own database, communicating over REST. See
+`overview.md`, sections 2-4, and ADR-002.
+ 
+**Why was each key technology chosen?**
+MySQL for database-level enforcement of domain invariants; Firebase RTDB only for the
+ephemeral GPS stream; FCM instead of a broker because every async need is a device
+notification. See ADR-003 and ADR-004.
+ 
+**What alternatives were evaluated and why were they discarded?**
+Modular monolith and a two-service split (ADR-002); PostgreSQL and Firestore-only
+(ADR-003); Kafka and RabbitMQ (ADR-004). Each ADR carries its own "Evaluated
+alternatives" table with the reason for discarding.
+ 
+**How is the system deployed?**
+Not yet defined — deployment belongs to `10-devops/`, outside the scope of this
+remediation.
+ 
+**What patterns does the team apply and how?**
+API Gateway and Database-per-Service are adopted. Saga, Outbox, Event Sourcing, and
+Circuit Breaker are explicitly **not** adopted, because ADR-004 rules out the message
+broker they depend on. Ports & Adapters is applied concretely to `service-request` in
+`hexagonal-architecture.md`.
