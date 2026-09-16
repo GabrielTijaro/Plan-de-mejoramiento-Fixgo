@@ -7,7 +7,7 @@
 ---
  
 ## Context
- 
+   
 FixGo must notify a driver whenever their service request changes status (HU-011), and
 the domain defines five events in `02-domain/domain-events.md` (`DriverRegistered`,
 `VehicleRegistered`, `ServiceRequested`, `MechanicMatched`, `ServiceCompleted`). The
