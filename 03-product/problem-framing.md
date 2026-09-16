@@ -7,35 +7,22 @@
 ---
 
 ## 1. The problem in one sentence
-
-> Complete this template:
-
-**[User segment]** who **[usage context]** struggle with **[pain/problem]**
-because **[root cause]**, resulting in **[quantifiable impact]**.
-
-**Example:**
-> **Mid-sized company inventory operators** who **manage catalogs of more than 500 products**
-> struggle with **stock control across multiple warehouses** because **current systems
-> do not support real-time synchronization**, resulting in **15% of orders with stock errors
-> and 3 hours of manual correction work per day**.
+**Stranded drivers experiencing unexpected vehicle breakdowns on the road** who **need immediate mechanical support** struggle with **severe delays, lack of reliable real-time tracking, and inefficient manual dispatching** because **current alternatives rely on random unverified phone calls and directory listings**, resulting in **wasted time, financial loss, and severe frustration**.
 
 ---
 
 ## 2. Affected users
 
-| Segment | Description | Estimated size | Priority |
+ Segment | Description | Estimated size | Priority |
 |---------|-------------|---------------|---------|
-| [Segment A] | [Who they are, what they do] | [N users] | High |
-| [Segment B] | [Who they are] | [N users] | Medium |
+| **Stranded Drivers** | Vehicle owners facing unexpected mechanical failures on highways or urban roads. | High | High |
+| **Local Mechanics / Workshops** | Independent mechanics and workshop operators seeking reliable client acquisition. | Medium | High |
 
 ### Jobs-to-be-done (JTBD)
 
-> What job is the user trying to do when they "hire" our product?
-
-**When** [situation / context],
-**I want** [motivation / what they are trying to achieve],
-**so that** [expected outcome / benefit].
-
+**When** my vehicle breaks down unexpectedly on the road,
+**I want** to instantly locate, contact, and dispatch the nearest verified mechanic with real-time tracking,
+**so that** I can resume my journey safely and minimize downtime.
 ---
 
 ## 3. Evidence of the problem
@@ -44,10 +31,8 @@ because **[root cause]**, resulting in **[quantifiable impact]**.
 
 | Evidence type | Source | Date | Key finding |
 |--------------|--------|------|------------|
-| User interviews | [N] interviews with [profile] | [date] | [what they said] |
-| Support data | Support tickets | [period] | [% of tickets on this topic] |
-| Benchmarking | [Competitors / market] | [date] | [how others solve it] |
-| Direct observation | [Shadowing / field research] | [date] | [what was observed] |
+| Direct observation | Field research in local transit routes | 2026 | Average wait time for manual roadside help exceeds 45 minutes without tracking. |
+| Benchmarking | Market analysis of local directory listings | 2026 | No centralized real-time platform exists for immediate local mechanical dispatching. |
 
 ---
 
@@ -57,8 +42,7 @@ because **[root cause]**, resulting in **[quantifiable impact]**.
 
 | Current solution | Limitations | Cost/Friction |
 |-----------------|------------|--------------|
-| [Excel / manual process] | [Does not scale, errors, slow] | [X hours/day] |
-| [Legacy system] | [No API, no integration] | [Y errors/week] |
+| Random phone calls to directory listings | Slow, unverified availability, no GPS tracking | High time consumption and uncertainty |
 
 ---
 
@@ -66,10 +50,10 @@ because **[root cause]**, resulting in **[quantifiable impact]**.
 
 > This is the first draft of the solution direction. It is not a commitment.
 
-**We believe that** [describe the high-level solution]
-**for** [the user segment],
-**will achieve** [the expected benefit].
-**We will know we succeeded when** [specific metric].
+**We believe that** an automated real-time geolocation matching platform (FixGo)
+**for** stranded drivers and local mechanics,
+**will achieve** instant dispatching under a 3-second SLA response target (NFR-01).
+**We will know we succeeded when** matching success rate reaches over 95% within the SLA threshold.
 
 ---
 
@@ -77,10 +61,8 @@ because **[root cause]**, resulting in **[quantifiable impact]**.
 
 | Metric | Current baseline | 6-month target | How to measure it |
 |--------|----------------|---------------|-------------------|
-| [Business metric 1] | [current value] | [target value] | [instrument] |
-| [Adoption metric] | [current value] | [target value] | [instrument] |
-
-**North Star Metric:** [The single metric that best captures the value delivered]
+| **Average Match Time** | 45 minutes | < 3 seconds (NFR-01) | System timestamp logs |
+| **User Satisfaction** | Low (fragmented) | > 90% positive | Post-service rating app |
 
 ---
 
@@ -105,6 +87,6 @@ because **[root cause]**, resulting in **[quantifiable impact]**.
 
 ## Correlations
 
-- Product vision → `03-product/vision.md`
-- HUs that implement this solution → `04-requirements/user-stories.md`
-- Detailed KPIs → `13-operations/README.md`
+- Vision and strategic pillars -> `03-product/vision.md`
+- Formal, measurable version of the 3-second SLA and matching success target -> `04-requirements/non-functional.md`
+- Entities involved in matching (Driver, Mechanic, ServiceRequest) -> `02-domain/entities-and-rules.md`
