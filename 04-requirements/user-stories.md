@@ -27,13 +27,13 @@
 
 ## User Stories
 
-### HU-001 — [Descriptive name] {#HU-001}
+### HU-001 — Driver registration {#HU-001}
 
-**Epic:** EP-00X
+**Epic:** EP-001
 
-> **As** [user role]
-> **I want** [action / feature]
-> **so that** [benefit / value received]
+> **As** an unregistered driver
+> **I want** to create an account with my email and password
+> **so that** I can request mechanical assistance
 
 **Acceptance Criteria:**
 
@@ -69,7 +69,7 @@ Scenario 2: Duplicate email
 
 ---
 
-### HU-002 — [Descriptive name] {#HU-002}
+### HU-002 — Login {#HU-002}
 
 **Epic:** EP-001
 
