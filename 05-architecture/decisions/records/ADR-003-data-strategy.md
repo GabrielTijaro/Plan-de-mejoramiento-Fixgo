@@ -7,7 +7,7 @@
 ---
  
 ## Context 
- 
+   
 Each of the three services defined in ADR-002 needs to persist data, and
 `service-request` additionally needs to push live GPS positions to mobile clients several
 times per minute per active request. Two different documents in the team repository had
