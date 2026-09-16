@@ -37,7 +37,7 @@ CRUD workloads. Separating them means the latency-critical service can be scaled
 tuned without dragging the other two along. The tiebreaker was the Database-per-Service
 requirement already asserted in `06-data/models.md`: honoring it inside a single
 deployable unit would give the drawbacks of both styles at once.
- 
+   
 ---
  
 ## Evaluated alternatives
