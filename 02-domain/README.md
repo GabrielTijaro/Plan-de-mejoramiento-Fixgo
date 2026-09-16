@@ -6,6 +6,11 @@
 ## Why this section exists
 The most costly mistakes in software are domain misunderstandings, not coding bugs. For FixGo, when developers deeply understand the business, the architecture succeeds. This ensures that:
 
+<<<<<<< HEAD
+=======
+The most costly mistakes in software are domain misunderstandings, not coding bugs. For FixGo, when developers deeply understand the business, the architecture succeeds. This ensures that:
+
+>>>>>>> a8426b4 (docs(02-domain): readme correctamente diligenciado)
 - Entities and invariants match real-world constraints (like the strict 3-second SLA and 15-meter GPS precision).
 - Microservice boundaries are drawn correctly based on clear Bounded Contexts (`auth-service`, `service-request`, `service-execution`).
 - Ubiquitous language is shared equally among developers, product owners, and business stakeholders.
@@ -34,6 +39,10 @@ Map of all bounded contexts and how they relate.
 **Format:**
 ```markdown
 ## Bounded Contexts
+<<<<<<< HEAD
+=======
+
+>>>>>>> a8426b4 (docs(02-domain): readme correctamente diligenciado)
 ### Matchmaking & Dispatch
 **Responsibility:** Service request lifecycle, matching to a nearby mechanic, and live location sync.
 **Main entities:** ServiceRequest, MatchResult, GPSLocation.
@@ -112,7 +121,20 @@ Running an Event Storming session with the team before filling in this section s
 
 ## Questions this section must answer
 
-- What are the main business entities?
-- What rules can NEVER be violated in the system?
-- What important events occur in the domain?
-- Where are the natural boundaries of the system (for defining microservices)?
+**What are the main business entities?**
+Driver, Vehicle, Mechanic, ServiceRequest, and Diagnostic — see `entities-and-rules.md`.
+
+**What rules can NEVER be violated in the system?**
+A Driver cannot create a request without an active Vehicle (INV-005); a Mechanic must
+be verified before accepting requests (INV-001); matching must complete within the SLA
+(INV-003); a request cannot be COMPLETED without an associated Diagnostic (INV-004) —
+see `entities-and-rules.md`.
+
+**What important events occur in the domain?**
+`DriverRegistered`, `VehicleRegistered`, `ServiceRequested`, `MechanicMatched`,
+`ServiceCompleted` — see `domain-events.md`.
+
+**Where are the natural boundaries of the system (for defining microservices)?**
+Three bounded contexts: User Management (`auth-service`), Matchmaking & Dispatch
+(`service-request`), and Service Execution (`service-execution`) — see `domain-map.md`.
+   
