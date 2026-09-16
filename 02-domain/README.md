@@ -6,11 +6,11 @@
 ## Why this section exists
 The most costly mistakes in software are domain misunderstandings, not coding bugs. For FixGo, when developers deeply understand the business, the architecture succeeds. This ensures that:
 
-<<<<<<< HEAD
-=======
+
+
 The most costly mistakes in software are domain misunderstandings, not coding bugs. For FixGo, when developers deeply understand the business, the architecture succeeds. This ensures that:
 
->>>>>>> a8426b4 (docs(02-domain): readme correctamente diligenciado)
+
 - Entities and invariants match real-world constraints (like the strict 3-second SLA and 15-meter GPS precision).
 - Microservice boundaries are drawn correctly based on clear Bounded Contexts (`auth-service`, `service-request`, `service-execution`).
 - Ubiquitous language is shared equally among developers, product owners, and business stakeholders.
@@ -39,10 +39,9 @@ Map of all bounded contexts and how they relate.
 **Format:**
 ```markdown
 ## Bounded Contexts
-<<<<<<< HEAD
+ 
 =======
 
->>>>>>> a8426b4 (docs(02-domain): readme correctamente diligenciado)
 ### Matchmaking & Dispatch
 **Responsibility:** Service request lifecycle, matching to a nearby mechanic, and live location sync.
 **Main entities:** ServiceRequest, MatchResult, GPSLocation.
