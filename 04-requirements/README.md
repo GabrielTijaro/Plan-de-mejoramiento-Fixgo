@@ -37,7 +37,8 @@ List of all the system's functional requirements.
 ```markdown
 | ID | Module | Description | Source (HU) | Priority |
 |----|--------|-------------|------------|---------|
-| FR-001 | [Service] | The system must [do something] | HU-XXX-001 | High |
+| FR-006 | service-request | The system must allow a driver to create a service request | HU-006 | High |
+| FR-007 | service-request | The system must match the nearest available verified mechanic | HU-007 | High |
 ```
 
 ### `non-functional.md` ⭐
@@ -57,7 +58,7 @@ Quality, performance, and technical constraint requirements.
 | NFR-010 | Uptime | 99.9% monthly | Production monitoring |
 
 ## Security
-| ID | Requirement | Description |
+| ID | Requirement | Description | 
 |----|------------|-------------|
 | NFR-020 | Authentication | JWT with 1-hour expiration |
 ```
@@ -67,9 +68,9 @@ Formalized user stories (coming from the `03-product/` backlog).
 **Fill in:** with As/I want/So that format + verifiable acceptance criteria.
 
 ### `traceability-matrix.md` ⭐
-Table that connects: HU → Requirement → Test case.
-**Fill in:** when you have requirements and tests defined. Allows coverage verification.
-
+The chain that proves nothing was lost between the requirement and the test.
+**Fill in:** FR → HU → test → service, plus reverse traceability (HU → FR) and a Gaps
+table recording what is still uncovered.
 **Format:**
 ```markdown
 | HU | FR/NFR | Description | Test case | Status |
@@ -89,23 +90,23 @@ Template for specifying non-functional requirements with their verification metr
 
 | This section feeds... | Why |
 |-----------------------|-----|
-| `05-architecture/` | Performance/availability NFRs guide architectural decisions |
-| `11-quality/testing-strategy.md` | Each FR must have at least one test case |
-| `09-microservices/` | FRs are grouped by responsible service |
-| `07-api/` | Integration FRs → endpoints in API contracts |
-| `15-project-control/risks.md` | Very demanding NFRs usually generate technical risks |
+| `02-domain/entities-and-rules.md` | Business rules in acceptance criteria are the same invariants modeled there |
+| `05-architecture/` | NFR-01 (latency) and NFR-03 (availability) drive the architectural style — see ADR-002 |
+| `06-data/models.md` | NFR-03 and NFR-05 have direct data-layer implications |
+| `09-microservices/` | Each HU names the service that implements it |
 
 ---
 
 ## Common mistakes to avoid
 
-❌ **"The system must be fast"** → Not measurable. Better: "p95 < 200ms"
-
-❌ **"The system must be secure"** → Not verifiable. Better: "Authentication with JWT, tokens expire in 1h"
-
-❌ Writing requirements that describe the solution instead of the problem.
-
-✅ A good requirement is: **specific, measurable, achievable, relevant, and verifiable**.
+❌ *"The system must be fast"* → not measurable.
+✅ *"Matching completes in ≤ 3 seconds (P95) from request creation to assignment."*
+ 
+❌ *"The system must be secure"* → not verifiable.
+✅ *"JWT access tokens expire in 1 hour; refresh tokens in 7 days, rotated on each use."*
+ 
+❌ An HU with no acceptance criteria → nobody can tell when it is done.
+✅ Every HU here carries at least two Gherkin scenarios: the happy path and an edge case.
 
 ---
 
