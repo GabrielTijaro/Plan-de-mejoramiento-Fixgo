@@ -22,28 +22,29 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                        System [Name]                                │
+│                        System FixGo                                 │
 │                                                                     │
-│  ┌─────────────┐    ┌─────────────┐    ┌────────────────────────┐  │
-│  │ [Service A] │    │ [Service B] │    │ [Service C]            │  │
-│  │             │    │             │    │                        │  │
-│  │ Port: 3001  │    │ Port: 3002  │    │ Port: 3003             │  │
-│  └──────┬──────┘    └──────┬──────┘    └──────────┬─────────────┘  │
-│         │                  │                       │                │
-│         └──────────────────┴───────────────────────┘                │
-│                            │ Message Bus                             │
+│  ┌─────────────┐    ┌─────────────────┐    ┌────────────────────┐  │
+│  │auth-service │    │ service-request │    │ service-execution  │  │
+│  │             │    │                 │    │                    │  │
+│  │ Port: 3001  │    │ Port: 3002      │    │ Port: 3003         │  │
+│  └──────┬──────┘    └──────┬──────────┘    └──────────┬─────────┘  │
+│         │                  │                           │            │
+│         └──────────────────┴───────────────────────────┘            │
+│                            │ FCM (push notifications only)          │
 └────────────────────────────│────────────────────────────────────────┘
                              │
                   ┌──────────┴──────────┐
                   │                     │
          ┌────────▼──────┐    ┌─────────▼──────┐
          │ API Gateway   │    │ Admin Dashboard │
-         │               │    │                 │
+         │               │    │  (Administrator)│
          └────────┬──────┘    └─────────────────┘
                   │
          ┌────────▼──────────────┐
          │    External clients   │
-         │  (Web, Mobile, API)   │
+         │ (Android app: Driver, │
+         │   Mechanic)            │
          └───────────────────────┘
 ```
 
@@ -91,10 +92,10 @@ graph TB
 
 | # | Service | Responsibility | Port | DB | Communication type |
 |---|---------|---------------|------|-----|-------------------|
-| 1 | [api-gateway] | Routing, auth, rate limiting | 8080 | Redis (cache) | HTTP Proxy |
-| 2 | [auth-service] | Registration, login, JWT tokens | 3001 | PostgreSQL | REST + Events |
-| 3 | [xxx-service] | [responsibility] | 300X | [DB] | [REST/Async] |
-
+| 1 | api-gateway | Routing, auth validation, rate limiting | 8080 | None | HTTP Proxy |
+| 2 | auth-service | Registration, login, JWT tokens, RBAC, Driver/Mechanic/Vehicle records | 3001 | MySQL | REST |
+| 3 | service-request | Service request lifecycle, mechanic matching, live GPS tracking | 3002 | MySQL + Firebase Realtime Database | REST + FCM push |
+| 4 | service-execution | Diagnostic registration, request closure | 3003 | MySQL | REST |
 > Full detail per service in `09-microservices/service-catalog.md`
 
 ---
