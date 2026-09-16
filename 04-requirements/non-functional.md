@@ -21,15 +21,17 @@
 
 | Attribute | Metric | Test condition |
 |-----------|--------|---------------|
-| P95 latency — critical endpoints | < 300ms | Under [N] RPS load |
-| P99 latency — critical endpoints | < 500ms | Under [N] RPS load |
+| P95 latency — critical endpoints | < 300ms | Under 50 RPS load |
+| P99 latency — critical endpoints | < 500ms | Under 50 RPS load |
 | P95 latency — non-critical endpoints | < 1000ms | Normal load |
-| Minimum throughput | [N] RPS | Without degradation |
+| Minimum throughput | 50 RPS | Without degradation |
 | Service startup time | < 30 seconds | Cold start |
+| **Matching SLA** | **Mechanic assigned in ≤ 3 seconds (P95)** | **From `POST /service-requests` to a `MechanicMatched` event** |
+| **GPS tracking accuracy** | **Within a 15-meter radius** | **Live location updates while a request is `ON_THE_WAY`** |
 
 **Defined critical endpoints:**
-- `POST /[resource]` — [justification for why it is critical]
-- `GET /[resource]/:id` — [justification]
+- `POST /service-requests` — triggers the 3-second matching SLA (FixGo's core value proposition)
+- `GET /service-requests/:id/location` — drives the live tracking screen, tied to the 15-meter GPS accuracy target
 
 **Load testing tools:**
 - k6, Apache JMeter, Locust, Gatling
@@ -57,12 +59,12 @@ feature deploys are frozen until the next month and stability is prioritized.
 
 ## NFR-003: Scalability
 
-| Scenario | Expected behavior |
+ Scenario | Expected behavior |
 |---------|------------------|
 | Gradual load growth | Horizontal auto-scaling activated when CPU > 70% |
 | Sudden spike (Black Friday, etc.) | System scales in < 2 minutes |
 | Load reduction | Scale-down without interrupting active traffic |
-| Horizontal scaling limit | Up to [N] instances per service |
+| Horizontal scaling limit | Up to 5 instances per service (MVP scale — 500 concurrent active requests) |
 
 **Strategy:** Stateless horizontal scaling — each instance does not store state in memory.
 State goes in Redis (sessions, cache) or PostgreSQL (persistent data).
@@ -91,7 +93,7 @@ Code must be reviewed against the OWASP Top 10 on each release.
 Tools: SAST (SonarQube/Snyk), dependency scanning, DAST in staging.
 
 ### Regulatory compliance
-- [GDPR / Habeas Data / PCI-DSS / etc.] — as applicable to the project
+- Colombian Habeas Data (Ley 1581 de 2012) — applies to driver/mechanic PII (name, phone, location history)
 
 ---
 
@@ -144,13 +146,12 @@ Tools: SAST (SonarQube/Snyk), dependency scanning, DAST in staging.
 
 | NFR | Priority (P1/P2/P3) | Validated in CI? | Owner |
 |-----|---------------------|-----------------|-------|
-| Performance | P1 | Yes (k6 in staging) | [Tech Lead] |
-| Availability | P1 | Yes (health checks) | [DevOps] |
-| Security | P1 | Yes (SAST + OWASP) | [Security] |
-| Scalability | P2 | Manual (quarterly) | [DevOps] |
-| Observability | P1 | Yes (smoke test in CI) | [Tech Lead] |
-| Maintainability | P2 | Yes (coverage in CI) | [Team] |
-
+| Performance (incl. 3s matching SLA) | P1 | Not yet — planned for `05-architecture` phase | Gabriel Tijaro Jimenez |
+| Availability | P2 | Not yet | Gabriel Tijaro Jimenez |
+| Security | P1 | Not yet | Gabriel Tijaro Jimenez |
+| Scalability | P3 | Not yet | Gabriel Tijaro Jimenez |
+| Observability | P2 | Not yet | Gabriel Tijaro Jimenez |
+| Maintainability | P3 | Not yet | Gabriel Tijaro Jimenez |  
 ---
 
 ## Correlations
