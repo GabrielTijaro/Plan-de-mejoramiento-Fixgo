@@ -10,43 +10,31 @@
 
 Before moving a User Story to "Ready for Sprint", verify:
 
-### Clarity
+# Definition of Ready (DoR) — Before Starting a Section
 
-- [ ] The story is written in the format: **As [role], I want [action], so that [benefit]**
-- [ ] The role is specific (not "as a user" — "as an authenticated buyer")
-- [ ] The expected benefit is clear and verifiable
+> A section is ready to write when the following is true. This prevents starting
+> `05-architecture` before `02-domain` is stable, which is exactly how the team repo ended
+> up with three different names for the same microservice.
 
-### Acceptance Criteria
+## Checklist
 
-- [ ] There are at least 2 acceptance criteria written in **Given / When / Then** format
-- [ ] The criteria cover the happy path AND the main error cases
-- [ ] The criteria are testable (it is possible to write an automated test for each one)
-- [ ] There are no ambiguous criteria ("the response should be fast" is not valid)
+- [ ] The SRS module(s) this section depends on have been re-read
+- [ ] Any upstream section it depends on is already committed (see dependency order below)
+- [ ] If the section introduces a new term, entity, or service name, it does not already
+      exist under a different name in `01-context/glossary.md` or `02-domain/domain-map.md`
 
-### Dependencies
+## Section dependency order for this repository
 
-- [ ] All external dependencies (other services, APIs, data) are identified
-- [ ] Blocking dependencies are resolved OR a workaround is defined
-- [ ] If it depends on another story, that story is already Done or In Progress
+```
+00-governance → 01-context → 02-domain → 03-product → 04-requirements → 05-architecture → 06-data
+```
 
-### Estimation
+Do not start a later section using a name, entity, or decision that the earlier section
+has not yet fixed — update the earlier section first.
 
-- [ ] The team has estimated the story (story points or t-shirt size)
-- [ ] There is agreement that the story fits in one sprint
-- [ ] If it's too large, it has been broken down into smaller stories
+## Correlations
 
-### Technical readiness
-
-- [ ] The necessary accesses and environments are available
-- [ ] The API contracts (OpenAPI) are defined if the story involves new endpoints
-- [ ] There is a definition of the data model if there are DB changes
-- [ ] The impact on other services is identified
-
-### Non-functional requirements
-
-- [ ] Performance requirements are specified (if applicable)
-- [ ] Security requirements are considered (authentication, authorization, validations)
-- [ ] Observability requirements are included (logs, metrics, traces)
+- Definition of Done → `00-governance/definition-of-done.md`
 
 ---
 
@@ -74,7 +62,5 @@ Before moving a User Story to "Ready for Sprint", verify:
 ---
 
 ## Correlations
+- Definition of Done → `00-governance/definition-of-done.md`
 
-- Full DoD → `00-governance/definition-of-done.md`
-- User Story template → `04-requirements/_template-hu.md`
-- User Stories backlog → `04-requirements/user-stories.md`

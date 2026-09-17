@@ -22,28 +22,29 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────────────┐
-│                        System [Name]                                │
+│                        System FixGo                                 │
 │                                                                     │
-│  ┌─────────────┐    ┌─────────────┐    ┌────────────────────────┐  │
-│  │ [Service A] │    │ [Service B] │    │ [Service C]            │  │
-│  │             │    │             │    │                        │  │
-│  │ Port: 3001  │    │ Port: 3002  │    │ Port: 3003             │  │
-│  └──────┬──────┘    └──────┬──────┘    └──────────┬─────────────┘  │
-│         │                  │                       │                │
-│         └──────────────────┴───────────────────────┘                │
-│                            │ Message Bus                             │
+│  ┌─────────────┐    ┌─────────────────┐    ┌────────────────────┐  │
+│  │auth-service │    │ service-request │    │ service-execution  │  │
+│  │             │    │                 │    │                    │  │
+│  │ Port: 3001  │    │ Port: 3002      │    │ Port: 3003         │  │
+│  └──────┬──────┘    └──────┬──────────┘    └──────────┬─────────┘  │
+│         │                  │                           │            │
+│         └──────────────────┴───────────────────────────┘            │
+│                            │ FCM (push notifications only)          │
 └────────────────────────────│────────────────────────────────────────┘
                              │
                   ┌──────────┴──────────┐
                   │                     │
          ┌────────▼──────┐    ┌─────────▼──────┐
          │ API Gateway   │    │ Admin Dashboard │
-         │               │    │                 │
+         │               │    │  (Administrator)│
          └────────┬──────┘    └─────────────────┘
                   │
          ┌────────▼──────────────┐
          │    External clients   │
-         │  (Web, Mobile, API)   │
+         │ (Android app: Driver, │
+         │   Mechanic)            │
          └───────────────────────┘
 ```
 
@@ -91,10 +92,10 @@ graph TB
 
 | # | Service | Responsibility | Port | DB | Communication type |
 |---|---------|---------------|------|-----|-------------------|
-| 1 | [api-gateway] | Routing, auth, rate limiting | 8080 | Redis (cache) | HTTP Proxy |
-| 2 | [auth-service] | Registration, login, JWT tokens | 3001 | PostgreSQL | REST + Events |
-| 3 | [xxx-service] | [responsibility] | 300X | [DB] | [REST/Async] |
-
+| 1 | api-gateway | Routing, auth validation, rate limiting | 8080 | None | HTTP Proxy |
+| 2 | auth-service | Registration, login, JWT tokens, RBAC, Driver/Mechanic/Vehicle records | 3001 | MySQL | REST |
+| 3 | service-request | Service request lifecycle, mechanic matching, live GPS tracking | 3002 | MySQL + Firebase Realtime Database | REST + FCM push |
+| 4 | service-execution | Diagnostic registration, request closure | 3003 | MySQL | REST |
 > Full detail per service in `09-microservices/service-catalog.md`
 
 ---
@@ -160,7 +161,8 @@ Transversal concerns that apply to ALL services:
 
 | ID | Description | Impact | Priority | Target sprint |
 |----|-------------|--------|---------|--------------|
-| AT-001 | [description] | [high/medium/low] | [P1/P2/P3] | [Sprint X] |
+| AT-001 | No automated tests exist yet for any of the 13 user stories (see `04-requirements/traceability-matrix.md`) | High | P1 | Once code repos exist, before Entrega 3 |
+| AT-002 | `service-request`'s dependency on Firebase Realtime Database for GPS is not yet validated against the 15-meter accuracy NFR under real network conditions | Medium | P2 | Post-remediation |
 
 > See also: `15-project-control/technical-backlog.md`
 
@@ -170,7 +172,7 @@ Transversal concerns that apply to ALL services:
 
 | Version | Architectural change | Motivation | Estimated date |
 |---------|---------------------|------------|----------------|
-| v2.0 | [e.g.: Migrate to gRPC for internal communication] | [Latency] | [Q4 2024] |
+| v1.1 | Add an in-app payment service (out of scope for v1.0, see `01-context/scope.md`) | Direct settlement between driver and mechanic has no dispute record today | Post-course, not scheduled |
 
 ---
 

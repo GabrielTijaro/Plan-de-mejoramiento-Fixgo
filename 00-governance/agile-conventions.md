@@ -7,13 +7,12 @@
 
 ## Sprint structure
 
-| Field | Value |
-|-------|-------|
-| Duration | [1 week / 2 weeks / 3 weeks] |
-| Sprint start | [Monday / Tuesday / Wednesday] |
-| Sprint end | [Friday of week N] |
-| Current sprint | Sprint [N] — [start date] to [end date] |
-| Estimated capacity | [N story points per sprint] |
+| Checkpoint | Due | Scope |
+|-------------|------------------------|--------------------------------------------------------|
+| Delivery 1 | 14-sep-2026, 18:00 | Sections 00-governance, 01-context, 02-domain |
+| Delivery 2 | 16-sep-2026, 18:00 | Sections 03-product, 04-requirements (based on the HU loaded by the instructor in the GitHub Project) |
+| Delivery 3 | 18-sep-2026, 18:00 | Sections 05-architecture, 06-data, 12-ux-ui |
+
 
 ---
 
@@ -78,8 +77,9 @@
 
 ## Backlog tool
 
-**Tool:** [Jira / Linear / GitHub Projects / Trello]
-**Board URL:** [URL]
+***Tool:** GitHub Projects — the instructor loads the User Stories (HU) directly into a
+GitHub Project linked to this repository. This repository's `04-requirements/user-stories.md`
+must mirror the HU that appear there, not invented ones.
 
 ### Board columns
 | Column | Meaning |

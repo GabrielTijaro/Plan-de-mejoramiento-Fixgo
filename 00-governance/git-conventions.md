@@ -1,6 +1,8 @@
-# Git Conventions
+Git Conventions — FixGo 
 
-> **Read this document before making your first commit on the project.**
+> This is an individual documentation repository created as part of the FixGo remediation
+> plan ADSO-3239188. It documents the same FixGo system as
+> the team repository (`fixgo-docs`), rewritten independently by this apprentice.
 
 ## Branch strategy
 
@@ -37,13 +39,26 @@ hotfix/null-token-expiration
 
 ## Commit format (Conventional Commits)
 
-```
-[type]([scope]): [lowercase description, imperative mood, no trailing period]
+This is a documentation-only sprint, so every commit uses the `docs` type. The scope is
+the section number and name; the description is lowercase, imperative, no trailing period.
 
-[optional body — explain WHY, not what]
-
-[optional footer — issue/user story references]
 ```
+docs(section-name): lowercase description, imperative mood, no trailing period
+```
+
+**Examples used in this repository:**
+```
+docs(00-governance): personalize git and agile conventions for FixGo
+docs(01-context): write system overview and scope
+docs(01-context): add glossary with 10 domain terms
+docs(02-domain): define bounded contexts and service ownership
+docs(02-domain): add Driver, Vehicle, Mechanic, ServiceRequest and Diagnostic entities
+docs(02-domain): add domain event catalog
+```
+
+**Do not use** `feat`, `fix`, `chore`, `refactor`, etc. in this repository — those types
+belong to a code repository, not a documentation-only remediation deliverable.
+
 
 **Types:**
 | Type | When to use |

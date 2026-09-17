@@ -38,19 +38,31 @@ User → [CreateOrder] → System → [OrderCreated] → Other contexts
 
 ## Event catalog
 
-### Event: [EventName]
-
-| Field | Value |
-|-------|-------|
-| **Name** | `[EventName]` |
-| **Bounded Context** | [Origin context] |
-| **Aggregate** | [Aggregate that generates it] |
-| **Trigger** | [Which business action generates this event] |
-| **Consumers** | [Which services/contexts listen to this event] |
-| **Channel (topic)** | `[topic.name]` |
-| **Schema version** | `v1` |
-| **Delivery guarantee** | At-least-once / At-most-once / Exactly-once |
-
+### Event: DriverRegistered
+* **Triggered by:** Driver completes sign-up.
+* **Data:** `driverId`, `email`
+* **Consumers:** Matchmaking & Dispatch
+* **Bounded Context:** User Management
+### Event: VehicleRegistered
+* **Triggered by:** Driver registers a vehicle.
+* **Data:** `vehicleId`, `driverId`, `plate`
+* **Consumers:** Matchmaking & Dispatch
+* **Bounded Context:** User Management
+### Event: ServiceRequested
+* **Triggered by:** Driver creates a request.
+* **Data:** `requestId`, `driverId`, `vehicleId`, `location`
+* **Consumers:** Service Execution
+* **Bounded Context:** Matchmaking & Dispatch
+### Event: MechanicMatched
+* **Triggered by:** Algorithm assigns a mechanic within the SLA.
+* **Data:** `requestId`, `mechanicId`, `eta`
+* **Consumers:** Service Execution, Driver UI
+* **Bounded Context:** Matchmaking & Dispatch
+### Event: ServiceCompleted
+* **Triggered by:** Mechanic submits the diagnostic.
+* **Data:** `requestId`, `diagnosticId`, `completionTime`
+* **Consumers:** User Management (history)
+* **Bounded Context:** Service Execution
 **Payload (JSON schema):**
 
 ```json
@@ -118,43 +130,33 @@ All events must include these fields in the envelope:
 
 ---
 
-## Event flow: [Flow name]
-
-> Document here the event flows for the main business processes.
-> Use the Event Storming format: orange=event, blue=command, green=view/policy, yellow=aggregate.
+## Event flow: Service request lifecycle
 
 ```
-[Actor]
-  │
-  │  [CommandA]           [CommandB]           [CommandC]
-  ▼      │                    │                    │
-[AggregateA]          [AggregateB]          [AggregateC]
-  │                        ▲                    ▲
-  │   [EventA]             │   [EventB]         │
-  └──────────────────────▶│──────────────────▶│
-```
 
-### Example: Order creation flow
+[Driver]                                        [Mechanic]
+   │                                                 │
+   │ CreateServiceRequest (command)                  │
+   ▼                                                 │
+[Aggregate: ServiceRequest]                          │
+   │                                                 │
+   │ ServiceRequested (event)                        │
+   ▼                                                 │
+[Policy: Matchmaking]                                │
+   │ assigns nearest AVAILABLE, verified mechanic    │
+   ▼                                                 │
+[Aggregate: ServiceRequest]                          │
+   │                                                 │
+   │ MechanicMatched (event) ───────────────────────▶│
+   │                                                  │
+   │                              SubmitDiagnostic (command)
+   │                                                  ▼
+   │                                    [Aggregate: Diagnostic]
+   │                                                  │
+   │◀───────────────────────── ServiceCompleted (event)
+   ▼
+[User Management: service history updated]
 
-```
-Customer
-  │
-  │  CreateOrder (command)
-  ▼
-[Aggregate: Order]
-  │
-  │  OrderCreated (event)
-  ├──────────────────────────────────┐
-  │                                   ▼
-  │                          [Service: Inventory]
-  │                          Decrements stock
-  │                          StockReserved (event)
-  │
-  │  OrderCreated (event)
-  └──────────────────────────────────┐
-                                      ▼
-                            [Service: Notifications]
-                            Sends email to customer
 ```
 
 ---
@@ -196,10 +198,13 @@ Step 5: Stop publishing EventV1
 
 ## Event summary table
 
-| Event | Origin context | Topic | Consumers | Version |
+| Event | Origin Context | Topic | Consumers | Version |
 |-------|---------------|-------|-----------|---------|
-| [EventA] | [ContextA] | `[topic.a]` | [SvcB, SvcC] | v1 |
-| [EventB] | [ContextB] | `[topic.b]` | [SvcA] | v1 |
+| DriverRegistered | User Management | `fixgo.users.driver-registered` | Matchmaking & Dispatch | v1 |
+| VehicleRegistered | User Management | `fixgo.users.vehicle-registered` | Matchmaking & Dispatch | v1 |
+| ServiceRequested | Matchmaking & Dispatch | `fixgo.services.requested` | Service Execution | v1 |
+| MechanicMatched | Matchmaking & Dispatch | `fixgo.services.mechanic-matched` | Service Execution, Driver UI | v1 |
+| ServiceCompleted | Service Execution | `fixgo.services.completed` | User Management | v1 | 
 
 ---
 
