@@ -104,10 +104,14 @@ User → [CreateOrder] → System → [OrderCreated] → Other contexts
 
 **What do consumers do with this event?**
 
-| Consuming service | Action | Idempotent? |
-|------------------|--------|-------------|
-| [Service A] | [Updates its data model] | Yes — uses eventId as idempotency key |
-| [Service B] | [Sends notification] | Yes — checks if notification was already sent |
+| Event | Consuming context | Action | Idempotent? |
+|-------|-------------------|--------|-------------|
+| `DriverRegistered` | Matchmaking & Dispatch | Creates the driver's profile shell so a future `ServiceRequested` can reference a known `driverId` | Yes — `driverId` is the natural key |
+| `VehicleRegistered` | Matchmaking & Dispatch | Caches the vehicle record so a `ServiceRequest` can validate `vehicleId` without a synchronous call to `auth-service` | Yes — `vehicleId` is the natural key |
+| `ServiceRequested` | Service Execution | Reserves a slot for the future `Diagnostic` once a mechanic is matched | Yes — `requestId` is the natural key |
+| `MechanicMatched` | Service Execution | Assigns the request to the mechanic's active queue | Yes — `requestId` is the natural key |
+| `MechanicMatched` | Driver UI (push) | Triggers the FCM notification "a mechanic is on the way" (HU-11) | Yes — one notification per `requestId` transition |
+| `ServiceCompleted` | User Management | Appends the closed request + diagnostic to the vehicle's service history | Yes — `diagnosticId` is the natural key |
 
 ---
 
@@ -220,8 +224,11 @@ Policy: Whenever an OrderCreated arrives with type=URGENT,
 ```
 
 | Trigger event | Policy | Emitted command | Service |
-|--------------|--------|----------------|---------|
-| [EventA] | Whenever [condition], then... | [CommandB] | [ServiceX] |
+|---------------|--------|------------------|---------|
+| `ServiceRequested` | Whenever a request is created, find the nearest `AVAILABLE` and verified Mechanic within the SLA (`04-requirements/non-functional.md`) | `AssignMechanic` | `service-request` |
+| `MechanicMatched` | Whenever a mechanic is assigned, notify the Driver of the ETA (HU-11) | `SendPushNotification` | `service-request` (via FCM) |
+| `ServiceCompleted` | Whenever a diagnostic is submitted, close the request and append it to the vehicle's history | `UpdateServiceHistory` | `auth-service` |
+ 
 
 ---
 
