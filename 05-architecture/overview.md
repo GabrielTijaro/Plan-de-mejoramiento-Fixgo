@@ -8,11 +8,15 @@
 
 ## 1. Adopted architectural style
 
-**Style:** [Microservices / Microservices + Event-Driven / Modular Monolith / etc.]
+**Style:** Microservices, communicating over REST + FCM push notifications (no event bus)
 
-**Justification:** [Why this style for this project and these requirements]
+**Justification:** ixGo's three bounded contexts (`02-domain/domain-map.md`) map cleanly
+to three independently deployable services, each with different operational needs —
+`service-request` is the only one bound by the 3-second matching SLA (NFR-01) and needs
+a real-time data layer, while `auth-service` and `service-execution` are ordinary CRUD
+workloads. Separating them lets the latency-critical service scale independently.
 
-**Reference ADR:** [`ADR-001-architectural-style.md`](decisions/records/)
+**Reference ADR:** [`ADR-002-architectural-style.md`](decisions/records/ADR-002-architectural-style.md)
 
 ---
 
