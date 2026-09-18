@@ -171,12 +171,6 @@ module describes.
 | Merge Vehicle management into User Management instead of a separate context | A standalone "Vehicle Management" context | A vehicle has no independent lifecycle from its Driver's account |
 | Single `service-request` microservice for matching + live GPS | Separate `geolocation-service` | The data model has no independent GPS schema — it's ephemeral data inside the same service |
 
-### Key decisions and discarded alternatives
-
-| Decision | Discarded alternative | Reason |
-|----------|----------------------|--------|
-| [Separate Context A and B] | [Have them in one] | [Business logic is different and they evolve at different rates] |
-
 ---
 
 ## 6. How to update this map
