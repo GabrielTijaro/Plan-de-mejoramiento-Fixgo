@@ -46,11 +46,11 @@ support.
 > the documentation phase is complete and code repositories exist.
 
 ```
-Q1 2024 ──── Q2 2024 ──── Q3 2024 ──── Q4 2024
-     │              │              │              │
-  [MVP]      [Feature A]    [Feature B]   [Scale]
-  Validate    Expand         Deepen        Grow
-  hypothesis  the market     the value
+Now (H1) ──────── Next (H2) ──────── Later (H3)
+        │                   │                   │
+    [MVP]              [Iteration]           [Scale]
+ Core dispatch      Diagnostics &         Analytics &
+  & matching         SLA tuning          multi-city rollout
 ```
 
 | Horizon | Period | Objective | Epics / Features | Uncertainty |
