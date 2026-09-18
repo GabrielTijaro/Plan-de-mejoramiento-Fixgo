@@ -18,21 +18,21 @@ service, it requests it via API or receives it via event. This principle guarant
 Data models for each microservice.
 **Fill in:** ER (entity-relationship) diagram or description of collections/tables for each service.
 
-**Format per service:**
 ```markdown
-## Service: [name]
-**DB Engine:** [PostgreSQL / MongoDB / Redis / etc.]
-**Justification:** [why this engine for this service]
-
-### Table/Collection: [name]
+## Service: auth-service
+**DB Engine:** MySQL 8 — decided in ADR-003-data-strategy.md
+**Justification:** enforces domain invariants (unique plate, verification status) at the DB level
+ 
+### Table: vehicles
 | Field | Type | Nullable | Description | Constraints |
 |-------|------|----------|-------------|-------------|
-| id | UUID | No | Unique identifier | PK |
-| [field] | [type] | [Yes/No] | [description] | [FK/Unique/etc.] |
-
+| id | CHAR(36) | No | Unique identifier | PK |
+| plate | VARCHAR(10) | No | License plate | UNIQUE (INV-006) |
+ 
 ### Indexes
 | Name | Fields | Type | Justification |
 |------|--------|------|---------------|
+| idx_vehicles_plate | plate | UNIQUE | Enforces INV-006 |
 ```
 
 ### `data-dictionary.md` ⭐
@@ -66,18 +66,19 @@ how to handle migrations with data in production.
 
 | This section is fed by... | And feeds into... |
 |---------------------------|-------------------|
-| `02-domain/entities-and-rules.md` → domain entities | DB tables |
-| `05-architecture/` → DB engine decisions | Engine choice in `models.md` |
-| `models.md` | `07-api/contracts/` → what data each service exposes |
-| `models.md` | `08-uml/` → ER diagrams |
-| `models.md` | `09-microservices/[service]/data-model.md` |
-
+| `02-domain/entities-and-rules.md` → domain entities | DB tables in `models.md` |
+| `05-architecture/decisions/records/ADR-003-data-strategy.md` → DB engine decision | Engine choice in `models.md` |
+ 
+> `07-api/`, `08-uml/`, and `09-microservices/` are part of the full framework scaffold
+> for a later project phase — out of scope for this remediation (see
+> `05-architecture/README.md` for the same note applied there).
+ 
 ---
 
 ## Important data decisions in microservices
 
 ### SQL or NoSQL?
-There is no single answer. It depends on the service:
+here is no single answer. It depends on the service:
 - **SQL** (PostgreSQL, MySQL): relational data, ACID transactions, fixed schema
 - **Document** (MongoDB): hierarchical data, flexible schema, high variability
 - **Key-value** (Redis): cache, sessions, high-speed temporary data
