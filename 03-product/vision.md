@@ -73,13 +73,13 @@ Now (H1) ──────── Next (H2) ──────── Later (H3)
 
 > The product is "done" when it achieves these OKRs:
 
-**Objective:** [What we want to achieve]
-
+**Objective:** Deliver a roadside-assistance dispatch experience drivers can trust in an emergency
+ 
 | Key Result | Baseline | Target | Date |
 |------------|---------|--------|------|
-| KR1: [specific metric] | [current value] | [target value] | [date] |
-| KR2: [metric] | [current] | [target] | [date] |
-| KR3: [business metric] | [current] | [target] | [date] |
+| KR1: Requests matched within the SLA | 0% (not measured yet) | ≥95% (see `problem-framing.md`, North Star Metric) | End of H1 |
+| KR2: Average matching time | ~45 min (manual, today's baseline) | ≤3 seconds, P95 (NFR-01) | End of H1 |
+| KR3: Verified mechanics onboarded in the pilot area | 0 | 20 verified mechanics | End of H1 |
 
 ---
 
