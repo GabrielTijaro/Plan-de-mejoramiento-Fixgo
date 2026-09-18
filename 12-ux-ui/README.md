@@ -21,63 +21,77 @@ The map of all screens/pages and how they connect.
 **Format:**
 ```markdown
 ## Navigation map
-
-### Public area (no authentication)
-- / (home)
-  - /login
-  - /register
-  - /recover-password
-
-### Private area — Role: [Role 1]
-- /dashboard
-  - /[module-1]
-    - /[module-1]/list
-    - /[module-1]/{id}/detail
+ 
+### Public area no authentication
+- / (splash)
+  - /auth/login
+  - /auth/register
+  - /auth/forgot-password
+ 
+### Private area — Role: DRIVER
+- /driver/dashboard
+  - /driver/vehicles
+    - /driver/vehicles/new
+    - /driver/vehicles/:vehicleId/edit
+  - /driver/requests/new
+  - /driver/requests/:requestId/tracking
+  - /driver/requests/history
   - /profile
-
-### Private area — Role: [Role 2]
-[...]
-
+ 
+### Private area — Role: MECHANIC
+- /mechanic/dashboard
+  - /mechanic/requests/:requestId
+  - /mechanic/requests/:requestId/diagnostic
+  - /profile
+ 
+### Private area — Role: ADMIN
+- /admin/mechanics/pending
+  - /admin/mechanics/:mechanicId
+- /admin/audit-logs
+ 
 ## Access matrix
-| Screen | [Role 1] | [Role 2] | [Admin] |
-|--------|---------|---------|---------|
-| /dashboard | ✅ | ✅ | ✅ |
-| /admin | ❌ | ❌ | ✅ |
+| Screen | DRIVER | MECHANIC | ADMIN |
+|--------|--------|----------|-------|
+| /driver/dashboard | ✅ | ❌ | ❌ |
+| /mechanic/dashboard | ❌ | ✅ | ❌ |
+| /admin/mechanics/pending | ❌ | ❌ | ✅ |
 ```
 
 ### `wireframes.md`
-Low-fidelity designs of the main screens.
-**Fill in:** wireframes in ASCII, Figma, or Balsamiq. Focus on structure, not colors.
+Low-fidelity ASCII structure of the four screens that carry FixGo's core flow: create a
+service request, live tracking, the mechanic's request detail, and mechanic verification.
 
 ### `design-system.md`
-The project's design system: tokens, components, patterns.
-**Fill in:** color palette, typography, spacing, base components (buttons, forms, tables).
+FixGo's design tokens: color palette (light/dark theme, RF6.2), typography, spacing, and
+the base components reused across screens — the status badge (mapped to
+`ServiceRequest`/`Mechanic` states), buttons, forms, and the admin data table.
 
 **Format:**
 ```markdown
 ## Design tokens
-
+ 
 ### Colors
 | Token | Value | Use |
 |-------|-------|-----|
-| --color-primary | #1976D2 | Primary buttons, links |
-| --color-error | #D32F2F | Error messages |
-| --color-success | #388E3C | Confirmations |
-
+| --color-primary-500 | #1976D2 | App bar, primary buttons |
+| --color-success | #388E3C | COMPLETED, verified mechanic |
+| --color-error | #D32F2F | CANCELLED, rejected mechanic |
+ 
 ### Typography
 | Level | Size | Weight | Use |
 |-------|------|--------|-----|
-| H1 | 32px | 700 | Page titles |
+| H1 | 28px | 700 | Screen titles |
 | Body | 16px | 400 | General text |
-
+ 
 ## Components
-### Primary button
-[description, variants, when to use it]
-
-### Data table
-[columns, pagination, search, inline actions]
+### Status badge
+Colored pill for ServiceRequest.status / Mechanic.status — see design-system.md for the
+full state → color mapping.
+ 
+### Data table Admin only
+Columns, pagination, mandatory date-range filter (RF7.1) — used on /admin/audit-logs.
 ```
-
+ 
 ---
 
 ## Correlations with other sections
@@ -86,8 +100,7 @@ The project's design system: tokens, components, patterns.
 |---------------------------|-------------------|
 | `04-requirements/user-stories.md` → what flows exist | Screens implementing each HU |
 | `02-domain/entities-and-rules.md` → what data to display | Fields in wireframes |
-| `09-microservices/` → what APIs the frontend consumes | What data arrives at each screen |
-
+| `00-governance/security-policy.md` → who can access what | Access matrix in `navigation-map.md` |
 ---
 
 ## Questions this section must answer
