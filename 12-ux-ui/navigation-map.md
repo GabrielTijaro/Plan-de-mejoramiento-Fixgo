@@ -8,50 +8,56 @@
 
 ## Frontend route structure
 
-> **Instruction:** Fill this tree with your application's real routes.
-> Use the `[method] /route` format for API endpoints where applicable.
-
 ```
-/                           → Home / landing page
+/                                 → Splash / landing (Flutter entry point)
+│
 ├── /auth
-│   ├── /login              → Authentication form
-│   ├── /register           → New user registration
-│   └── /forgot-password    → Password recovery
+│   ├── /login                    → Authentication form (Firebase Auth)
+│   ├── /register                 → New account — role selection: Driver or Mechanic
+│   └── /forgot-password          → Password recovery
 │
-├── /dashboard              → Main panel (authenticated)
-│   ├── /overview           → Summary and key metrics
-│   └── /notifications      → Notification center
+├── /driver                       → role: DRIVER
+│   ├── /dashboard                → CTA "Request assistance" + active request card
+│   ├── /vehicles                 → Vehicle list (RF2.1)
+│   │   ├── /new                  → Register vehicle (plate, brand, model, type)
+│   │   └── /:vehicleId/edit      → Edit / deactivate (RF2.4)
+│   ├── /requests/new             → Create service request (select vehicle + location)
+│   ├── /requests/:requestId/tracking → Live map, mechanic ETA (RF4.2, HU-08)
+│   └── /requests/history         → Past requests + linked Diagnostic (service history)
 │
-├── /[resource-a]           → [Resource A] list
-│   ├── /new                → Creation form
-│   └── /:id
-│       ├── /               → Resource detail
-│       └── /edit           → Edit form
+├── /mechanic                     → role: MECHANIC
+│   ├── /dashboard                → Incoming request queue (only if verified + AVAILABLE)
+│   ├── /requests/:requestId      → Accept / reject, update status (PENDING→...→IN_PROGRESS)
+│   └── /requests/:requestId/diagnostic → Close request: submit findings + finalStatus (HU-10)
 │
-├── /[resource-b]           → [Resource B] list
-│   └── /:id                → Detail
+├── /admin                        → role: ADMIN
+│   ├── /mechanics/pending        → Verification queue (HU-03)
+│   ├── /mechanics/:mechanicId    → Approve / reject a mechanic
+│   └── /audit-logs               → Filter by date, user, module (HU-13, RF7.1)
 │
-├── /admin                  → Administration panel (role: ADMIN)
-│   ├── /users              → User management
-│   └── /settings           → System configuration
-│
-└── /profile                → Authenticated user's profile
+└── /profile                      → All roles — language ES/EN + light/dark theme (RF6, HU-12)
 ```
 
 ---
 
 ## Screen map
 
-| Screen | Route | Component | Minimum role | Backend service |
-|--------|-------|-----------|--------------|----------------|
-| Home | `/` | `HomePage` | Public | — |
-| Login | `/auth/login` | `LoginPage` | Public | auth-service |
-| Register | `/auth/register` | `RegisterPage` | Public | auth-service |
-| Dashboard | `/dashboard` | `DashboardPage` | USER | [service] |
-| [Resource A] list | `/[resource-a]` | `[ResourceA]ListPage` | USER | [service] |
-| [Resource A] detail | `/[resource-a]/:id` | `[ResourceA]DetailPage` | USER | [service] |
-| Create [Resource A] | `/[resource-a]/new` | `[ResourceA]FormPage` | USER | [service] |
-| Admin panel | `/admin` | `AdminDashboard` | ADMIN | auth-service |
+| Screen | Route | Minimum role | Backend service |
+|--------|-------|--------------|------------------|
+| Login | `/auth/login` | Public | `auth-service` |
+| Register | `/auth/register` | Public | `auth-service` |
+| Driver dashboard | `/driver/dashboard` | DRIVER | `service-request` |
+| Vehicle list | `/driver/vehicles` | DRIVER | `auth-service` |
+| Register vehicle | `/driver/vehicles/new` | DRIVER | `auth-service` |
+| Create service request | `/driver/requests/new` | DRIVER | `service-request` |
+| Live tracking | `/driver/requests/:requestId/tracking` | DRIVER | `service-request` (Firebase RTDB) |
+| Request history | `/driver/requests/history` | DRIVER | `service-execution` |
+| Mechanic dashboard | `/mechanic/dashboard` | MECHANIC | `service-request` |
+| Request detail (mechanic) | `/mechanic/requests/:requestId` | MECHANIC | `service-request` |
+| Submit diagnostic | `/mechanic/requests/:requestId/diagnostic` | MECHANIC | `service-execution` |
+| Mechanic verification queue | `/admin/mechanics/pending` | ADMIN | `auth-service` |
+| Audit logs | `/admin/audit-logs` | ADMIN | `auth-service` |
+| Profile / settings | `/profile` | DRIVER, MECHANIC, ADMIN | `auth-service` |
 
 ---
 
@@ -59,33 +65,62 @@
 
 ### Flow 1 — [Name of main flow]
 
+### Flow 1 — Create and track a service request (core flow)
+ 
 ```
-[Start screen]
+Driver dashboard (/driver/dashboard)
     │
-    ▼ [User action]
-[Screen 2]
+    ▼ Tap "Request assistance"
+Create request (/driver/requests/new) — select active Vehicle + confirm location
     │
-    ├── [Successful case] ──► [OK result screen]
+    ├── No active Vehicle ──► Redirect to /driver/vehicles/new (INV-005)
     │
-    └── [Error case] ────► [Error screen / feedback]
+    ▼ Submit
+Live tracking (/driver/requests/:requestId/tracking) — status: PENDING
+    │
+    ├── Matched within SLA ──► status: ACCEPTED → ON_THE_WAY → IN_PROGRESS (push notifications, HU-11)
+    │
+    └── Driver cancels (PENDING/ACCEPTED only, RF3.4) ──► status: CANCELLED
+    │
+    ▼ Mechanic submits diagnostic
+Request closed ──► status: COMPLETED, appears in /driver/requests/history
 ```
-
-**Related HUs:** HU-[service]-001, HU-[service]-002
-
+ 
+**Related HUs:** HU-06, HU-07, HU-08, HU-09, HU-11
+ 
 ### Flow 2 — Authentication
-
+ 
 ```
 Landing (/)
     │
-    ▼ Click "Sign in"
+    ▼ Tap "Sign in"
 Login (/auth/login)
     │
-    ├── Valid credentials ──► Dashboard (/dashboard)
+    ├── Valid credentials ──► Role-based dashboard (/driver/dashboard or /mechanic/dashboard)
     │
-    └── Invalid credentials ► Login with error message (max. 5 attempts)
+    └── Invalid credentials ──► Login with generic error (does not reveal which field failed)
 ```
-
-**Related HUs:** HU-AUTH-001, HU-AUTH-002
+ 
+**Related HUs:** HU-01, HU-02
+ 
+### Flow 3 — Mechanic accepts and closes a request
+ 
+```
+Mechanic dashboard (/mechanic/dashboard) — only visible if status = AVAILABLE and verified (INV-001)
+    │
+    ▼ Open an incoming request
+Request detail (/mechanic/requests/:requestId)
+    │
+    ▼ Accept ──► status: ACCEPTED → ON_THE_WAY → IN_PROGRESS
+    ▼ On site, service finished
+Submit diagnostic (/mechanic/requests/:requestId/diagnostic) — findings + finalStatus
+    │
+    ▼ Cannot submit without required fields (INV-004: no COMPLETED without a Diagnostic)
+Request closed ──► status: COMPLETED, Mechanic returns to AVAILABLE
+```
+ 
+**Related HUs:** HU-07, HU-10
+  
 
 ---
 
@@ -93,16 +128,16 @@ Login (/auth/login)
 
 | Rule | Description |
 |------|-------------|
-| Authentication | Routes under `/dashboard`, `/[resource]`, `/admin` redirect to `/auth/login` if no session |
-| Authorization | Routes under `/admin` redirect to `/dashboard` if the user does not have ADMIN role |
-| 404 | Undefined routes show the 404 screen with a link to dashboard |
-| Confirmation | Destructive actions (delete, cancel) show a confirmation dialog before executing |
+| Authentication | Routes under `/driver`, `/mechanic`, `/admin`, `/profile` redirect to `/auth/login` if no active session |
+| Authorization | `/driver/*` requires role DRIVER; `/mechanic/*` requires role MECHANIC and status ≠ verification-pending; `/admin/*` requires role ADMIN — any mismatch redirects to the user's own dashboard |
+| Mechanic gating | `/mechanic/dashboard` shows the request queue only if the mechanic's own status is `AVAILABLE` (INV-001, INV-002) |
+| 404 | Undefined routes show a 404 screen with a link back to the role's dashboard |
+| Confirmation | Cancelling a request or deactivating a vehicle shows a confirmation dialog before executing (RF2.4, RF3.4) |
 
 ---
 
 ## Correlations
 
-- Design system (visual components) → `12-ux-ui/design-system.md`
-- Wireframes → `12-ux-ui/wireframes/` (if applicable)
-- Frontend API contracts → `07-api/contracts/openapi/`
+- Design system (visual components, status badge colors) → `12-ux-ui/design-system.md`
+- Entities and states shown on screen → `02-domain/entities-and-rules.md`
 - Roles and permissions → `00-governance/security-policy.md`

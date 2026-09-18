@@ -1,204 +1,192 @@
-# Design System
-
-> The design system is the shared visual language between design and development.
-> It prevents inconsistencies, accelerates design, and reduces rework.
-> **Rule:** Before creating a new component, check here if it already exists.
-
+# Design System — FixGo
+ 
+> The design system is the shared visual language between design and the Flutter/Android
+> frontend. It prevents inconsistencies and gives every screen in `navigation-map.md` the
+> same building blocks. **Rule:** before creating a new component, check here if it
+> already exists.
+ 
 ---
-
+ 
 ## Design tokens
-
+ 
 Tokens are the design system's variables. Changing a token changes the entire system.
-
+FixGo ships both a light and a dark theme (**RF6.2** — must apply without re-login and
+persist across app restarts, **NFR-08**).
+ 
 ### Colors
-
+ 
 ```css
-/* Base palette */
---color-primary-50:  #[hex];   /* Lightest */
---color-primary-100: #[hex];
---color-primary-500: #[hex];   /* Default */
---color-primary-900: #[hex];   /* Darkest */
-
---color-secondary-500: #[hex];
---color-neutral-50:  #[hex];
---color-neutral-900: #[hex];
-
+/* Base palette — light theme */
+--color-primary-50:  #E3F2FD;
+--color-primary-500: #1976D2;   /* Default — app bar, primary actions */
+--color-primary-900: #0D47A1;   /* Pressed state */
+ 
+--color-neutral-50:  #FAFAFA;   /* Page background */
+--color-neutral-900: #212121;   /* Primary text */
+ 
+/* Base palette — dark theme */
+--color-primary-500-dark: #64B5F6;
+--color-neutral-50-dark:  #121212;
+--color-neutral-900-dark: #ECECEC;
+ 
 /* Semantic colors */
---color-success:  #[hex];      /* Green — success, confirmed */
---color-warning:  #[hex];      /* Yellow — caution, pending */
---color-error:    #[hex];      /* Red — error, cancelled */
---color-info:     #[hex];      /* Blue — neutral information */
-
+--color-success:  #388E3C;   /* COMPLETED, verified mechanic, ACTIVE vehicle */
+--color-warning:  #F57C00;   /* PENDING, ON_THE_WAY */
+--color-error:    #D32F2F;   /* CANCELLED, INACTIVE vehicle, rejected mechanic */
+--color-info:     #1976D2;   /* ACCEPTED, IN_PROGRESS */
+--color-neutral:  #757575;   /* OFFLINE, BUSY (mechanic) */
+ 
 /* Text */
---color-text-primary:   #[hex];
---color-text-secondary: #[hex];
---color-text-disabled:  #[hex];
-
+--color-text-primary:   #212121;
+--color-text-secondary: #757575;
+--color-text-disabled:  #BDBDBD;
+ 
 /* Backgrounds */
---color-bg-page:    #[hex];
---color-bg-card:    #[hex];
---color-bg-overlay: rgba([r],[g],[b], 0.5);
+--color-bg-page:    var(--color-neutral-50);
+--color-bg-card:    #FFFFFF;
+--color-bg-overlay: rgba(0,0,0, 0.5);
 ```
-
+ 
 ### Typography
-
+ 
 ```css
-/* Families */
---font-family-sans:  '[Font name], sans-serif';
---font-family-mono:  '[Mono font name], monospace';
-
-/* Sizes (modular scale 1.25) */
---font-size-xs:   0.75rem;   /* 12px */
---font-size-sm:   0.875rem;  /* 14px */
---font-size-base: 1rem;      /* 16px */
---font-size-lg:   1.25rem;   /* 20px */
---font-size-xl:   1.563rem;  /* 25px */
---font-size-2xl:  1.953rem;  /* 31px */
---font-size-3xl:  2.441rem;  /* 39px */
-
+/* Family — platform default, no custom font (keeps FCM notifications consistent, RF4.5) */
+--font-family-sans: 'Roboto', sans-serif;
+ 
+/* Sizes */
+--font-size-caption: 0.75rem;   /* 12px — timestamps, helper text */
+--font-size-body:    1rem;      /* 16px — general text, form labels */
+--font-size-h2:      1.25rem;   /* 20px — card/section titles */
+--font-size-h1:      1.75rem;   /* 28px — screen titles */
+ 
 /* Weights */
 --font-weight-regular: 400;
---font-weight-medium:  500;
+--font-weight-medium:  600;
 --font-weight-bold:    700;
-
+ 
 /* Line height */
---line-height-tight:  1.2;
 --line-height-normal: 1.5;
---line-height-loose:  1.8;
 ```
-
+ 
 ### Spacing
-
+ 
 ```css
 /* 4px system */
---space-1:  0.25rem;   /* 4px */
---space-2:  0.5rem;    /* 8px */
---space-3:  0.75rem;   /* 12px */
---space-4:  1rem;      /* 16px */
---space-6:  1.5rem;    /* 24px */
---space-8:  2rem;      /* 32px */
---space-12: 3rem;      /* 48px */
---space-16: 4rem;      /* 64px */
+--space-xs: 0.25rem;   /* 4px  — icon-to-label */
+--space-sm: 0.5rem;    /* 8px  — compact list rows */
+--space-md: 1rem;      /* 16px — default card/screen padding */
+--space-lg: 1.5rem;    /* 24px — between sections on a screen */
 ```
-
+ 
 ### Borders and shadows
-
+ 
 ```css
-/* Border radius */
---radius-sm: 4px;
---radius-md: 8px;
---radius-lg: 16px;
---radius-full: 9999px;  /* Pill */
-
-/* Shadows */
---shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
---shadow-md: 0 4px 6px rgba(0,0,0,0.1);
---shadow-lg: 0 10px 15px rgba(0,0,0,0.15);
+--radius-sm:   4px;    /* form fields */
+--radius-md:   8px;    /* cards */
+--radius-full: 9999px; /* status badge (pill) */
+ 
+--shadow-sm: 0 1px 2px rgba(0,0,0,0.05);   /* card resting state */
+--shadow-md: 0 4px 6px rgba(0,0,0,0.1);    /* live-tracking card, raised */
 ```
-
+ 
 ---
-
+ 
 ## Components
-
+ 
+### Status badge
+ 
+The single most-reused component — a pill (`--radius-full`) showing `ServiceRequest.status`
+or `Mechanic.status` (see `02-domain/entities-and-rules.md`).
+ 
+| State | Color token | Used on |
+|-------|-------------|---------|
+| PENDING | `--color-warning` | Tracking screen, Mechanic dashboard |
+| ACCEPTED / IN_PROGRESS | `--color-info` | Both |
+| ON_THE_WAY | `--color-warning` | Tracking screen |
+| COMPLETED | `--color-success` | Request history |
+| CANCELLED | `--color-error` | Request history |
+| Mechanic: AVAILABLE | `--color-success` | Mechanic dashboard header |
+| Mechanic: BUSY / OFFLINE | `--color-neutral` | Mechanic dashboard header |
+ 
 ### Buttons
-
+  
 | Variant | Use | Disabled state |
-|---------|-----|----------------|
-| Primary | Main action on the page | `opacity: 0.5; cursor: not-allowed` |
-| Secondary | Secondary actions | same |
-| Danger | Destructive actions (delete) | same |
-| Ghost | Tertiary actions, links | same |
-
+|---------|-----|-----------------|
+| Primary | Main action ("Request assistance", "Approve") | 40% opacity, not tappable |
+| Secondary (outlined) | "Cancel request" | same |
+| Danger | "Reject" mechanic, deactivate vehicle | same, requires confirmation modal |
+| Ghost/text | "Forgot password?" | same |
+ 
 **Usage rules:**
-- Only one Primary action per view
-- Danger only with modal confirmation ("Are you sure?")
-- Buttons have a loading state for async operations
-
+- Only one Primary action per screen (e.g. only one "Request assistance" button on the Driver dashboard).
+- Danger only with modal confirmation (RF2.4, RF3.4).
+- Buttons show a loading spinner during async calls (e.g. while `AssignMechanic` runs).
 ### Forms
-
+ 
 | Component | When to use |
 |-----------|-------------|
-| Input text | Single-line free text |
-| Textarea | Multi-line free text |
-| Select | Fixed list of options (< 15 items) |
-| Combobox | List with search (> 15 items or dynamic loading) |
-| Checkbox | Independent binary option |
-| Radio | Select one option from a few (2-5) |
-| Toggle | Enable/disable a feature |
-| DatePicker | Date selection |
-
-**Error messages in forms:**
-- The message appears below the field, in red
-- The field border turns red
-- The message says how to fix the error, not just that there is an error
-
-```
-✓ "The email must have the format user@domain.com"
-✗ "Invalid email"
-```
-
+| Input text | Plate, brand, model (Vehicle registration) |
+| Select | Vehicle type, vehicle picker on "Create request" |
+| Toggle | Mechanic AVAILABLE/OFFLINE switch, dark mode |
+| DatePicker | Audit log date-range filter (mandatory, RF7.1) |
+ 
+**Error messages:** shown below the field, in `--color-error`, and say how to fix it —
+e.g. "This plate is already registered" (RF2.1 uniqueness), not "Invalid plate".
+ 
 ### Feedback
-
+ 
 | Component | When | Duration |
-|-----------|------|---------|
-| Toast/Snackbar | Action confirmations | 4 seconds |
-| Inline alert | Form errors | Until corrected |
-| Modal | Destructive confirmations, irreversible actions | Until the user decides |
-| Loading spinner | Operations > 200ms | Until finished |
-| Skeleton | Loading list content / cards | Until loaded |
-
-### Data table
-
+|-----------|------|----------|
+| Toast/Snackbar | "Request cancelled", "Diagnostic submitted" | 4 seconds |
+| Inline alert | "No mechanic available nearby" (HU-07) | Until dismissed |
+| Modal | Cancel request, deactivate vehicle, reject mechanic | Until the user decides |
+| Loading spinner | Matching in progress (target: within the SLA) | Until finished |
+| Skeleton | Request history list loading | Until loaded |
+ 
+### Data table (Admin only)
+ 
 | Aspect | Behavior |
-|--------|---------|
-| Pagination | Maximum 20 rows per page (user-configurable) |
-| Sorting | Click on column, toggle asc/desc |
-| Filters | Side panel or filter row above the table |
-| Selection | Checkbox in the first column |
-| Actions | Final column with actions menu (edit, delete, etc.) |
-| Empty state | Illustration + message + primary action CTA |
-
+|--------|----------|
+| Pagination | 20 rows per page |
+| Filters | Mandatory date range above the table (RF7.1 — no unbounded query) |
+| Columns | User, action, module, result, timestamp |
+| Empty state | "No log entries for this range" |
+ 
 ---
-
+ 
 ## UX patterns
-
+ 
 ### Principles
-
-1. **Confirm before destroying:** Any action that permanently deletes or modifies data requires a confirmation modal.
-
-2. **Immediate feedback:** Every action must have a visual response in < 100ms (even if it is just the loading state).
-
-3. **Prevent rather than correct:** Validate in real time in the form, not only on submit.
-
-4. **Empty state as a feature:** The screen without data is the new user's first impression — guide them to the first action.
-
+ 
+1. **Confirm before destroying:** cancelling a request or deactivating a vehicle always shows a confirmation modal (RF2.4, RF3.4).
+2. **Immediate feedback:** every tap has a visual response in < 100ms, even if only a loading state.
+3. **Prevent rather than correct:** plate uniqueness and active-vehicle checks happen as the driver types, not only on submit.
+4. **Status is always visible:** the badge for the active request never scrolls out of view on the tracking screen.
 ### Error handling
-
+ 
 | Scenario | What to show |
-|----------|-------------|
-| Network error | Toast "No connection. Retrying..." with automatic retry |
-| 401 error | Redirect to login with message "Your session expired" |
-| 403 error | Screen "You do not have permission to view this" with link to support |
-| 404 error | 404 screen with back navigation |
-| 500 error | Error toast + "Retry" button |
-| Timeout | Toast "This is taking longer than normal" with cancel option |
-
+|----------|---------------|
+| Network error | Toast "No connection. Retrying..." with automatic retry (supports offline queueing, NFR-07) |
+| 401 | Redirect to `/auth/login` — "Your session expired" |
+| 403 | "You don't have permission to view this" (e.g. Driver hitting `/admin/*`) |
+| No mechanic available | Inline alert, not a generic error (HU-07 acceptance criterion) |
+| Timeout on matching | Toast "This is taking longer than expected" with a manual retry |
+ 
 ---
-
-## Accessibility guide (minimums)
-
+ 
+## Accessibility guide minimums
+ 
 | Aspect | Minimum required |
-|--------|-----------------|
-| Text contrast | WCAG AA (4.5:1 for normal text, 3:1 for large text) |
-| Keyboard navigation | All interactive elements accessible with Tab |
-| Form labels | All fields with associated label (`for` / `aria-label`) |
-| Images | Descriptive alt text on all non-decorative images |
-| Visible focus | Visible focus indicator on all interactive elements |
-
+|--------|-------------------|
+| Text contrast | WCAG AA (4.5:1 normal text, 3:1 large text) — checked in both themes |
+| Touch targets | Minimum 44×44px (buttons, list rows) |
+| Form labels | Every field has an associated label |
+| Status badge | Never color-only — always paired with the status text (e.g. "ACCEPTED", not just a colored dot) |
+ 
 ---
-
+ 
 ## Correlations
-
+ 
 - Navigation map → `12-ux-ui/navigation-map.md`
 - Wireframes → `12-ux-ui/wireframes.md`
 - UX non-functional requirements → `04-requirements/non-functional.md`
